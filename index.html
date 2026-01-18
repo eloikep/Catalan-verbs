@@ -5,528 +5,257 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Révision Catalan</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body { font-family: system-ui, -apple-system, sans-serif; }
-    </style>
 </head>
-<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
-    <div id="app" class="p-4"></div>
-
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen p-4">
+    <div id="app"></div>
     <script>
-        const verbs = [
-            { fr: 'être', es: 'ser', ca: 'ser', conjugations: ['soc', 'ets', 'és', 'som', 'sou', 'són'] },
-            { fr: 'être (état)', es: 'estar', ca: 'estar', conjugations: ['estic', 'estàs', 'està', 'estem', 'esteu', 'estan'] },
-            { fr: 'avoir', es: 'tener', ca: 'tenir', conjugations: ['tinc', 'tens', 'té', 'tenim', 'teniu', 'tenen'] },
-            { fr: 'aller', es: 'ir', ca: 'anar', conjugations: ['vaig', 'vas', 'va', 'anem', 'aneu', 'van'] },
-            { fr: 'faire', es: 'hacer', ca: 'fer', conjugations: ['faig', 'fas', 'fa', 'fem', 'feu', 'fan'] },
-            { fr: 'pouvoir', es: 'poder', ca: 'poder', conjugations: ['puc', 'pots', 'pot', 'podem', 'podeu', 'poden'] },
-            { fr: 'vouloir', es: 'querer', ca: 'voler', conjugations: ['vull', 'vols', 'vol', 'volem', 'voleu', 'volen'] },
-            { fr: 'dire', es: 'decir', ca: 'dir', conjugations: ['dic', 'dius', 'diu', 'diem', 'dieu', 'diuen'] },
-            { fr: 'venir', es: 'venir', ca: 'venir', conjugations: ['vinc', 'véns', 'vé', 'venim', 'veniu', 'vénen'] },
-            { fr: 'savoir', es: 'saber', ca: 'saber', conjugations: ['sé', 'saps', 'sap', 'sabem', 'sabeu', 'saben'] },
-            { fr: 'voir', es: 'ver', ca: 'veure', conjugations: ['veig', 'veus', 'veu', 'veiem', 'veieu', 'veuen'] },
-            { fr: 'donner', es: 'dar', ca: 'donar', conjugations: ['dono', 'dones', 'dona', 'donem', 'doneu', 'donen'] },
-            { fr: 'prendre', es: 'tomar', ca: 'prendre', conjugations: ['prenc', 'prens', 'pren', 'prenem', 'preneu', 'prenen'] },
-            { fr: 'parler', es: 'hablar', ca: 'parlar', conjugations: ['parlo', 'parles', 'parla', 'parlem', 'parleu', 'parlen'] },
-            { fr: 'sortir', es: 'salir', ca: 'sortir', conjugations: ['surto', 'surts', 'surt', 'sortim', 'sortiu', 'surten'] },
-            { fr: 'mettre', es: 'poner', ca: 'posar', conjugations: ['poso', 'poses', 'posa', 'posem', 'poseu', 'posen'] },
-            { fr: 'devoir', es: 'deber/tener que', ca: 'haver de', conjugations: ['he de', 'has de', 'ha de', 'hem de', 'heu de', 'han de'] },
-            { fr: 'penser', es: 'pensar', ca: 'pensar', conjugations: ['penso', 'penses', 'pensa', 'pensem', 'penseu', 'pensen'] },
-            { fr: 'trouver', es: 'encontrar', ca: 'trobar', conjugations: ['trobo', 'trobes', 'troba', 'trobem', 'trobeu', 'troben'] },
-            { fr: 'vivre', es: 'vivir', ca: 'viure', conjugations: ['visc', 'vius', 'viu', 'vivim', 'viviu', 'viuen'] }
-        ];
+// ==================== BASE DE DONNÉES ====================
+const VERBS_DB = [
+    {fr:'être',es:'ser',ca:'ser',present:['soc','ets','és','som','sou','són'],subjunctive:['sigui','siguis','sigui','siguem','sigueu','siguin']},
+    {fr:'avoir',es:'tener',ca:'tenir',present:['tinc','tens','té','tenim','teniu','tenen'],subjunctive:['tingui','tinguis','tingui','tinguem','tingueu','tinguin']},
+    {fr:'aller',es:'ir',ca:'anar',present:['vaig','vas','va','anem','aneu','van'],subjunctive:['vagi','vagis','vagi','anem','aneu','vagin']},
+    {fr:'faire',es:'hacer',ca:'fer',present:['faig','fas','fa','fem','feu','fan'],subjunctive:['faci','facis','faci','fem','feu','facin']},
+    {fr:'pouvoir',es:'poder',ca:'poder',present:['puc','pots','pot','podem','podeu','poden'],subjunctive:['pugui','puguis','pugui','puguem','pugueu','puguin']},
+    {fr:'vouloir',es:'querer',ca:'voler',present:['vull','vols','vol','volem','voleu','volen'],subjunctive:['vulgui','vulguis','vulgui','vulguem','vulgueu','vulguin']},
+    {fr:'dire',es:'decir',ca:'dir',present:['dic','dius','diu','diem','dieu','diuen'],subjunctive:['digui','diguis','digui','diguem','digueu','diguin']},
+    {fr:'venir',es:'venir',ca:'venir',present:['vinc','véns','vé','venim','veniu','vénen'],subjunctive:['vingui','vinguis','vingui','vinguem','vingueu','vinguin']},
+    {fr:'savoir',es:'saber',ca:'saber',present:['sé','saps','sap','sabem','sabeu','saben'],subjunctive:['sàpiga','sàpigues','sàpiga','sapiguem','sapigueu','sàpiguen']},
+    {fr:'voir',es:'ver',ca:'veure',present:['veig','veus','veu','veiem','veieu','veuen'],subjunctive:['vegi','vegis','vegi','vegem','vegeu','vegin']},
+    {fr:'parler',es:'hablar',ca:'parlar',present:['parlo','parles','parla','parlem','parleu','parlen'],subjunctive:['parli','parlis','parli','parlem','parleu','parlin']},
+    {fr:'vivre',es:'vivir',ca:'viure',present:['visc','vius','viu','vivim','viviu','viuen'],subjunctive:['visqui','visquis','visqui','visquem','visqueu','visquin']},
+    {fr:'écrire',es:'escribir',ca:'escriure',present:['escric','escrius','escriu','escrivim','escriviu','escriuen'],subjunctive:['escrigui','escriguis','escrigui','escriguem','escrigueu','escriguin']},
+    {fr:'servir',es:'servir',ca:'servir',present:['serveixo','serveixes','serveix','servim','serviu','serveixen'],subjunctive:['serveixi','serveixis','serveixi','servim','serviu','serveixin']},
+    {fr:'lire',es:'leer',ca:'llegir',present:['llegeixo','llegeixes','llegeix','llegim','llegiu','llegeixen'],subjunctive:['llegeixi','llegeixis','llegeixi','llegim','llegiu','llegeixin']},
+    {fr:'manger',es:'comer',ca:'menjar',present:['menjo','menges','menja','mengem','mengeu','mengen'],subjunctive:['mengi','mengis','mengi','mengem','mengeu','mengin']}
+];
 
-        const pronouns = [
-            { ca: 'jo', fr: 'je', es: 'yo', index: 0 },
-            { ca: 'tu', fr: 'tu', es: 'tú', index: 1 },
-            { ca: 'ell/ella', fr: 'il/elle', es: 'él/ella', index: 2 },
-            { ca: 'nosaltres', fr: 'nous', es: 'nosotros/as', index: 3 },
-            { ca: 'vosaltres', fr: 'vous', es: 'vosotros/as', index: 4 },
-            { ca: 'ells/elles', fr: 'ils/elles', es: 'ellos/ellas', index: 5 }
-        ];
+const PRONOUNS = [
+    {ca:'jo',fr:'je',es:'yo',i:0},
+    {ca:'tu',fr:'tu',es:'tú',i:1},
+    {ca:'ell/ella',fr:'il/elle',es:'él/ella',i:2},
+    {ca:'nosaltres',fr:'nous',es:'nosotros/as',i:3},
+    {ca:'vosaltres',fr:'vous',es:'vosotros/as',i:4},
+    {ca:'ells/elles',fr:'ils/elles',es:'ellos/ellas',i:5}
+];
 
-        const translations = {
-            fr: {
-                title: 'Révision Catalan',
-                menu: {
-                    title: 'Menu Principal',
-                    verbs: 'Verbes',
-                    vocab: 'Vocabulaire',
-                    vocabSoon: '(Bientôt disponible)',
-                    changeLang: 'Changer de langue'
-                },
-                game: {
-                    backToMenu: 'Retour au menu',
-                    step1: 'Étape 1: Traduction',
-                    step2: 'Étape 2: Conjugaison',
-                    verb: 'Verbe',
-                    question1: 'Quelle est la traduction en catalan ?',
-                    question2: 'Conjugue au présent',
-                    fullConjugation: 'Conjugaison complète de',
-                    nextQuestion: 'Question suivante',
-                    ok: 'OK, continuer'
-                },
-                stats: {
-                    title: 'Récapitulatif',
-                    studied: 'Verbes étudiés',
-                    translation: 'Traduction',
-                    conjugations: 'Conjugaisons',
-                    correct: 'Correcte',
-                    wrong: 'Erreur',
-                    notTested: 'Non testé',
-                    continue: 'Continuer'
-                }
-            },
-            es: {
-                title: 'Repaso Catalán',
-                menu: {
-                    title: 'Menú Principal',
-                    verbs: 'Verbos',
-                    vocab: 'Vocabulario',
-                    vocabSoon: '(Próximamente)',
-                    changeLang: 'Cambiar idioma'
-                },
-                game: {
-                    backToMenu: 'Volver al menú',
-                    step1: 'Paso 1: Traducción',
-                    step2: 'Paso 2: Conjugación',
-                    verb: 'Verbo',
-                    question1: '¿Cuál es la traducción al catalán?',
-                    question2: 'Conjuga en presente',
-                    fullConjugation: 'Conjugación completa de',
-                    nextQuestion: 'Siguiente pregunta',
-                    ok: 'OK, continuar'
-                },
-                stats: {
-                    title: 'Resumen',
-                    studied: 'Verbos estudiados',
-                    translation: 'Traducción',
-                    conjugations: 'Conjugaciones',
-                    correct: 'Correcto',
-                    wrong: 'Error',
-                    notTested: 'No probado',
-                    continue: 'Continuar'
-                }
-            }
-        };
+const TRANSLATIONS = {
+    fr:{
+        title:'Révision Catalan',
+        menu:{title:'Menu Principal',verbs:'Verbes',selectTenses:'Sélectionner les temps',start:'Commencer',vocab:'Vocabulaire',soon:'(Bientôt)',changeLang:'Changer de langue'},
+        tenses:{present:'Présent',subjunctive:'Subjonctif'},
+        game:{back:'← Menu',step1:'Étape 1: Traduction',step2:'Étape 2: Conjugaison',verb:'Verbe',q1:'Quelle est la traduction en catalan ?',q2:'au',full:'Conjugaison complète de',next:'Question suivante',ok:'OK, continuer'},
+        stats:{title:'Récapitulatif',questions:'questions',translation:'Traduction',continue:'Continuer',menu:'Menu'}
+    },
+    es:{
+        title:'Repaso Catalán',
+        menu:{title:'Menú Principal',verbs:'Verbos',selectTenses:'Seleccionar tiempos',start:'Comenzar',vocab:'Vocabulario',soon:'(Próximamente)',changeLang:'Cambiar idioma'},
+        tenses:{present:'Presente',subjunctive:'Subjuntivo'},
+        game:{back:'← Menú',step1:'Paso 1: Traducción',step2:'Paso 2: Conjugación',verb:'Verbo',q1:'¿Cuál es la traducción al catalán?',q2:'en',full:'Conjugación completa de',next:'Siguiente pregunta',ok:'OK, continuar'},
+        stats:{title:'Resumen',questions:'preguntas',translation:'Traducción',continue:'Continuar',menu:'Menú'}
+    }
+};
 
-        let state = {
-            screen: 'language',
-            language: null,
-            stage: 'translation',
-            currentVerb: null,
-            currentPronoun: null,
-            options: [],
-            selectedAnswer: null,
-            showResult: false,
-            score: 0,
-            total: 0,
-            questionCount: 0,
-            verbStats: {}
-        };
+// ==================== ÉTAT GLOBAL ====================
+let state = {
+    screen:'language',lang:null,stage:'translation',verb:null,pron:null,opts:[],sel:null,show:false,
+    score:0,total:0,qCount:0,tenses:{present:true,subjunctive:false},tense:null,verbStats:{}
+};
 
-        function selectLanguage(lang) {
-            state.language = lang;
-            state.screen = 'menu';
-            render();
-        }
+// ==================== FONCTIONS PRINCIPALES ====================
+function selectLanguage(l){state.lang=l;state.screen='menu';render();}
+function goToMenu(){state.screen='menu';render();}
+function goToLanguage(){state={screen:'language',lang:null,stage:'translation',verb:null,pron:null,opts:[],sel:null,show:false,score:0,total:0,qCount:0,tenses:{present:true,subjunctive:false},tense:null,verbStats:{}};render();}
+function toggleTense(t){state.tenses[t]=!state.tenses[t];render();}
 
-        function goToMenu() {
-            state.screen = 'menu';
-            render();
-        }
+function startVerbs(){
+    const has=Object.values(state.tenses).some(x=>x);
+    if(!has){alert(state.lang==='fr'?'Sélectionnez au moins un temps':'Seleccione al menos un tiempo');return;}
+    state.screen='verbs';state.score=0;state.total=0;state.qCount=0;state.verbStats={};
+    startQ();
+}
 
-        function goToLanguage() {
-            state = {
-                screen: 'language',
-                language: null,
-                stage: 'translation',
-                currentVerb: null,
-                currentPronoun: null,
-                options: [],
-                selectedAnswer: null,
-                showResult: false,
-                score: 0,
-                total: 0,
-                questionCount: 0,
-                verbStats: {}
-            };
-            render();
-        }
+function initStats(ca){
+    if(!state.verbStats[ca])state.verbStats[ca]={translation:null,conjs:[null,null,null,null,null,null]};
+}
 
-        function startVerbs() {
-            state.screen = 'verbs';
-            state.score = 0;
-            state.total = 0;
-            state.questionCount = 0;
-            state.verbStats = {};
-            startNewQuestion();
-        }
+function genTrOpts(v){
+    const d=VERBS_DB.filter(x=>x.ca!==v.ca).sort(()=>Math.random()-0.5).slice(0,3).map(x=>x.ca);
+    return[v.ca,...d].sort(()=>Math.random()-0.5);
+}
 
-        function generateTranslationOptions(correctVerb) {
-            const distractors = verbs
-                .filter(v => v.ca !== correctVerb.ca)
-                .sort(() => Math.random() - 0.5)
-                .slice(0, 3)
-                .map(v => v.ca);
-            return [correctVerb.ca, ...distractors].sort(() => Math.random() - 0.5);
-        }
+function createTraps(correct,allForms){
+    const t=[];
+    if(correct.includes('eix')){t.push(correct.replace('eix','ix'),correct.replace('eix','ieix'));}
+    if(correct.includes('iu')){t.push(correct.replace('iu','ieu'),correct.replace('iu','iueu'));}
+    if(correct.includes('visc')){t.push('visco','viscu');}
+    if(correct.endsWith('c')&&!correct.includes('esc'))t.push(correct+'o');
+    if(correct.includes('prenc')){t.push('prend','preno');}
+    if(correct.includes('serv'))t.push(correct.replace('eix','is'));
+    return t.filter(x=>!allForms.includes(x));
+}
 
-        function generateConjugationOptions(correctVerb, pronounIndex) {
-            const correct = correctVerb.conjugations[pronounIndex];
-            const allConjugations = correctVerb.conjugations.filter((c, i) => i !== pronounIndex);
-            
-            const options = [correct];
-            const shuffled = allConjugations.sort(() => Math.random() - 0.5);
-            
-            for (let i = 0; i < Math.min(3, shuffled.length); i++) {
-                options.push(shuffled[i]);
-            }
-            
-            return options.sort(() => Math.random() - 0.5);
-        }
+function genConjOpts(v,idx,tense){
+    const correct=v[tense][idx];
+    const allForms=v[tense];
+    const opts=[correct];
+    const others=allForms.filter((_,i)=>i!==idx);
+    const traps=createTraps(correct,allForms);
+    const pool=[...others,...traps];
+    return[correct,...pool.sort(()=>Math.random()-0.5).slice(0,3)].sort(()=>Math.random()-0.5);
+}
 
-        function initVerbStats(verbCa) {
-            if (!state.verbStats[verbCa]) {
-                state.verbStats[verbCa] = {
-                    translation: null,
-                    conjugations: [null, null, null, null, null, null]
-                };
-            }
-        }
+function startQ(){
+    const active=Object.keys(state.tenses).filter(k=>state.tenses[k]);
+    const tense=active[Math.floor(Math.random()*active.length)];
+    const verb=VERBS_DB[Math.floor(Math.random()*VERBS_DB.length)];
+    const pron=PRONOUNS[Math.floor(Math.random()*PRONOUNS.length)];
+    initStats(verb.ca);
+    state.verb=verb;state.pron=pron;state.tense=tense;state.stage='translation';
+    state.opts=genTrOpts(verb);state.sel=null;state.show=false;
+    render();
+}
 
-        function startNewQuestion() {
-            const verb = verbs[Math.floor(Math.random() * verbs.length)];
-            const pronoun = pronouns[Math.floor(Math.random() * pronouns.length)];
-            
-            initVerbStats(verb.ca);
-            
-            state = {
-                ...state,
-                currentVerb: verb,
-                currentPronoun: pronoun,
-                stage: 'translation',
-                options: generateTranslationOptions(verb),
-                selectedAnswer: null,
-                showResult: false
-            };
-            render();
-        }
-
-        function handleAnswer(answer) {
-            state.selectedAnswer = answer;
-            state.showResult = true;
-            
-            if (state.stage === 'translation') {
-                const isCorrect = answer === state.currentVerb.ca;
-                state.verbStats[state.currentVerb.ca].translation = isCorrect;
-                
-                if (!isCorrect) {
-                    state.total++;
-                }
-                render();
-                
-                if (isCorrect) {
-                    state.stage = 'conjugation';
-                    state.options = generateConjugationOptions(state.currentVerb, state.currentPronoun.index);
-                    state.selectedAnswer = null;
-                    state.showResult = false;
-                    render();
-                }
-            } else {
-                const correct = state.currentVerb.conjugations[state.currentPronoun.index];
-                const isCorrect = answer === correct;
-                
-                state.verbStats[state.currentVerb.ca].conjugations[state.currentPronoun.index] = isCorrect;
-                
-                if (isCorrect) {
-                    state.score++;
-                }
-                state.total++;
-                state.questionCount++;
-                render();
-            }
-        }
-
-        function handleNext() {
-            if (state.questionCount > 0 && state.questionCount % 10 === 0) {
-                state.screen = 'stats';
-                render();
-            } else {
-                startNewQuestion();
-            }
-        }
-
-        function continueFromStats() {
-            state.screen = 'verbs';
-            startNewQuestion();
-        }
-
-        function renderLanguageScreen() {
-            return `
-                <div class="max-w-md mx-auto mt-20">
-                    <div class="bg-white rounded-lg shadow-xl p-8 text-center">
-                        <h1 class="text-4xl font-bold text-indigo-900 mb-8">🇪🇸 Català 🇫🇷</h1>
-                        <p class="text-gray-600 mb-8">Choisissez votre langue / Elige tu idioma</p>
-                        <div class="space-y-4">
-                            <button
-                                onclick="selectLanguage('fr')"
-                                class="w-full bg-indigo-600 text-white py-4 rounded-lg font-bold text-xl hover:bg-indigo-700 transition-colors"
-                            >
-                                🇫🇷 Français
-                            </button>
-                            <button
-                                onclick="selectLanguage('es')"
-                                class="w-full bg-red-600 text-white py-4 rounded-lg font-bold text-xl hover:bg-red-700 transition-colors"
-                            >
-                                🇪🇸 Español
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
-        function renderMenuScreen() {
-            const t = translations[state.language].menu;
-            return `
-                <div class="max-w-md mx-auto mt-20">
-                    <div class="bg-white rounded-lg shadow-xl p-8">
-                        <h1 class="text-4xl font-bold text-indigo-900 mb-8 text-center">${t.title}</h1>
-                        <div class="space-y-4">
-                            <button
-                                onclick="startVerbs()"
-                                class="w-full bg-indigo-600 text-white py-6 rounded-lg font-bold text-xl hover:bg-indigo-700 transition-colors flex items-center justify-center gap-3"
-                            >
-                                <span class="text-3xl">📚</span>
-                                ${t.verbs}
-                            </button>
-                            <button
-                                disabled
-                                class="w-full bg-gray-300 text-gray-500 py-6 rounded-lg font-bold text-xl cursor-not-allowed flex items-center justify-center gap-3"
-                            >
-                                <span class="text-3xl">💬</span>
-                                ${t.vocab}
-                                <span class="text-sm">${t.vocabSoon}</span>
-                            </button>
-                            <button
-                                onclick="goToLanguage()"
-                                class="w-full bg-gray-200 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-300 transition-colors"
-                            >
-                                🌐 ${t.changeLang}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
-        function renderStatsScreen() {
-            const t = translations[state.language].stats;
-            const verbList = Object.keys(state.verbStats);
-            
-            return `
-                <div class="max-w-4xl mx-auto">
-                    <div class="bg-white rounded-lg shadow-xl p-8">
-                        <h1 class="text-3xl font-bold text-indigo-900 mb-6 text-center">${t.title}</h1>
-                        <p class="text-center text-gray-600 mb-6">${state.questionCount} questions complétées</p>
-                        
-                        <div class="space-y-4">
-                            ${verbList.map(verbCa => {
-                                const verb = verbs.find(v => v.ca === verbCa);
-                                const stats = state.verbStats[verbCa];
-                                
-                                return `
-                                    <div class="border rounded-lg p-4">
-                                        <div class="flex items-center justify-between mb-3">
-                                            <h3 class="font-bold text-lg">${verb.ca}</h3>
-                                            <span class="px-3 py-1 rounded-full text-sm ${
-                                                stats.translation === true ? 'bg-green-100 text-green-800' : 
-                                                stats.translation === false ? 'bg-red-100 text-red-800' : 
-                                                'bg-gray-100 text-gray-600'
-                                            }">
-                                                ${t.translation}: ${stats.translation === true ? '✓' : stats.translation === false ? '✗' : '-'}
-                                            </span>
-                                        </div>
-                                        <div class="grid grid-cols-6 gap-2">
-                                            ${pronouns.map((p, idx) => `
-                                                <div class="text-center p-2 rounded ${
-                                                    stats.conjugations[idx] === true ? 'bg-green-100' :
-                                                    stats.conjugations[idx] === false ? 'bg-red-100' :
-                                                    'bg-gray-100'
-                                                }">
-                                                    <div class="text-xs font-medium text-gray-700">${p.ca}</div>
-                                                    <div class="text-lg">
-                                                        ${stats.conjugations[idx] === true ? '✓' :
-                                                          stats.conjugations[idx] === false ? '✗' : '-'}
-                                                    </div>
-                                                </div>
-                                            `).join('')}
-                                        </div>
-                                    </div>
-                                `;
-                            }).join('')}
-                        </div>
-                        
-                        <div class="mt-8 flex gap-4">
-                            <button
-                                onclick="goToMenu()"
-                                class="flex-1 bg-gray-200 text-gray-700 py-3 rounded-lg font-bold hover:bg-gray-300 transition-colors"
-                            >
-                                Menu
-                            </button>
-                            <button
-                                onclick="continueFromStats()"
-                                class="flex-1 bg-indigo-600 text-white py-3 rounded-lg font-bold hover:bg-indigo-700 transition-colors"
-                            >
-                                ${t.continue}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
-        function renderVerbsScreen() {
-            const { stage, currentVerb, currentPronoun, options, selectedAnswer, showResult, score, total, questionCount } = state;
-            const t = translations[state.language].game;
-            
-            if (!currentVerb || !currentPronoun) return '';
-
-            const isCorrect = stage === 'translation' 
-                ? selectedAnswer === currentVerb.ca
-                : selectedAnswer === currentVerb.conjugations[currentPronoun.index];
-
-            const correctAnswer = stage === 'translation' ? currentVerb.ca : currentVerb.conjugations[currentPronoun.index];
-            const verbName = currentVerb[state.language];
-
-            return `
-                <div class="max-w-2xl mx-auto">
-                    <div class="bg-white rounded-lg shadow-xl p-8 mb-6">
-                        <div class="flex justify-between items-center mb-8">
-                            <button
-                                onclick="goToMenu()"
-                                class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-300 transition-colors"
-                            >
-                                ← ${t.backToMenu}
-                            </button>
-                            <div class="flex gap-3">
-                                <div class="bg-purple-100 px-3 py-2 rounded-lg">
-                                    <span class="text-sm font-medium text-purple-900">${questionCount}</span>
-                                </div>
-                                <div class="bg-indigo-100 px-4 py-2 rounded-lg">
-                                    <span class="text-2xl mr-2">🏆</span>
-                                    <span class="font-bold text-indigo-900">${score}/${total}</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="mb-6">
-                            <div class="flex gap-2 mb-6">
-                                <div class="flex-1 h-2 rounded ${stage === 'translation' ? 'bg-indigo-500' : 'bg-green-500'}"></div>
-                                <div class="flex-1 h-2 rounded ${stage === 'conjugation' ? 'bg-indigo-500' : 'bg-gray-300'}"></div>
-                            </div>
-                            
-                            <p class="text-sm text-gray-600 mb-2">
-                                ${stage === 'translation' ? t.step1 : t.step2}
-                            </p>
-                        </div>
-
-                        ${stage === 'translation' ? `
-                            <div class="mb-8">
-                                <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">
-                                    ${t.verb}: <span class="text-indigo-600">${verbName}</span>
-                                </h2>
-                                <p class="text-gray-600 text-center mb-6">${t.question1}</p>
-                            </div>
-                        ` : `
-                            <div class="mb-8">
-                                <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">
-                                    <span class="text-indigo-600">${currentPronoun.ca}</span> _____ (${currentVerb.ca})
-                                </h2>
-                                <p class="text-gray-600 text-center mb-6">${t.question2}</p>
-                            </div>
-                        `}
-
-                        <div class="grid grid-cols-1 gap-3">
-                            ${options.map((option, index) => `
-                                <button
-                                    onclick="handleAnswer('${option.replace(/'/g, "\\'")}')"
-                                    ${showResult ? 'disabled' : ''}
-                                    class="p-4 rounded-lg text-lg font-medium transition-all ${
-                                        showResult
-                                            ? option === correctAnswer
-                                                ? 'bg-green-500 text-white'
-                                                : option === selectedAnswer
-                                                ? 'bg-red-500 text-white'
-                                                : 'bg-gray-100 text-gray-400'
-                                            : 'bg-indigo-50 text-indigo-900 hover:bg-indigo-100 cursor-pointer'
-                                    }"
-                                >
-                                    <div class="flex items-center justify-between">
-                                        <span>${option}</span>
-                                        ${showResult && option === correctAnswer ? '<span class="text-2xl">✓</span>' : ''}
-                                        ${showResult && option === selectedAnswer && option !== correctAnswer ? '<span class="text-2xl">✗</span>' : ''}
-                                    </div>
-                                </button>
-                            `).join('')}
-                        </div>
-
-                        ${showResult ? `
-                            <div class="mt-6">
-                                ${stage === 'conjugation' && !isCorrect ? `
-                                    <div class="bg-blue-50 p-4 rounded-lg mb-4">
-                                        <h3 class="font-bold text-blue-900 mb-2">${t.fullConjugation} "${currentVerb.ca}":</h3>
-                                        <div class="grid grid-cols-2 gap-2 text-sm">
-                                            ${pronouns.map((p, idx) => `
-                                                <div class="text-blue-800">
-                                                    <span class="font-medium">${p.ca}:</span> ${currentVerb.conjugations[idx]}
-                                                </div>
-                                            `).join('')}
-                                        </div>
-                                    </div>
-                                ` : ''}
-                                
-                                ${stage === 'conjugation' ? `
-                                    <button
-                                        onclick="handleNext()"
-                                        class="w-full bg-indigo-600 text-white py-3 rounded-lg font-bold hover:bg-indigo-700 transition-colors flex items-center justify-center gap-2"
-                                    >
-                                        <span class="text-xl">↻</span>
-                                        ${t.nextQuestion}
-                                    </button>
-                                ` : stage === 'translation' && !isCorrect ? `
-                                    <button
-                                        onclick="handleNext()"
-                                        class="w-full bg-indigo-600 text-white py-3 rounded-lg font-bold hover:bg-indigo-700 transition-colors"
-                                    >
-                                        ${t.ok}
-                                    </button>
-                                ` : ''}
-                            </div>
-                        ` : ''}
-                    </div>
-                </div>
-            `;
-        }
-
-        function render() {
-            let html = '';
-            
-            if (state.screen === 'language') {
-                html = renderLanguageScreen();
-            } else if (state.screen === 'menu') {
-                html = renderMenuScreen();
-            } else if (state.screen === 'verbs') {
-                html = renderVerbsScreen();
-            } else if (state.screen === 'stats') {
-                html = renderStatsScreen();
-            }
-
-            document.getElementById('app').innerHTML = html;
-        }
-
+function handleAns(ans){
+    state.sel=ans;state.show=true;
+    if(state.stage==='translation'){
+        const ok=ans===state.verb.ca;
+        state.verbStats[state.verb.ca].translation=ok;
+        if(!ok)state.total++;
         render();
+        if(ok){
+            state.stage='conjugation';
+            state.opts=genConjOpts(state.verb,state.pron.i,state.tense);
+            state.sel=null;state.show=false;
+            render();
+        }
+    }else{
+        const correct=state.verb[state.tense][state.pron.i];
+        const ok=ans===correct;
+        state.verbStats[state.verb.ca].conjs[state.pron.i]=ok;
+        if(ok)state.score++;
+        state.total++;state.qCount++;
+        render();
+    }
+}
+
+function next(){
+    if(state.qCount>0&&state.qCount%10===0){state.screen='stats';render();}
+    else startQ();
+}
+
+function continueStats(){state.screen='verbs';startQ();}
+
+// ==================== RENDU ====================
+function renderLang(){
+    return`<div class="max-w-md mx-auto mt-20"><div class="bg-white rounded-lg shadow-xl p-8 text-center">
+    <h1 class="text-4xl font-bold text-indigo-900 mb-8">🇪🇸 Català 🇫🇷</h1>
+    <p class="text-gray-600 mb-8">Choisissez votre langue / Elige tu idioma</p>
+    <div class="space-y-4">
+    <button onclick="selectLanguage('fr')" class="w-full bg-indigo-600 text-white py-4 rounded-lg font-bold text-xl hover:bg-indigo-700">🇫🇷 Français</button>
+    <button onclick="selectLanguage('es')" class="w-full bg-red-600 text-white py-4 rounded-lg font-bold text-xl hover:bg-red-700">🇪🇸 Español</button>
+    </div></div></div>`;
+}
+
+function renderMenu(){
+    const t=TRANSLATIONS[state.lang].menu;
+    const tn=TRANSLATIONS[state.lang].tenses;
+    return`<div class="max-w-md mx-auto mt-10"><div class="bg-white rounded-lg shadow-xl p-8">
+    <h1 class="text-3xl font-bold text-indigo-900 mb-6 text-center">${t.title}</h1>
+    <div class="bg-blue-50 p-4 rounded-lg mb-6">
+    <h2 class="font-bold text-blue-900 mb-3">${t.selectTenses}</h2>
+    <div class="space-y-2">
+    ${Object.keys(state.tenses).map(k=>`<label class="flex items-center gap-2 cursor-pointer">
+    <input type="checkbox" ${state.tenses[k]?'checked':''} onchange="toggleTense('${k}')" class="w-4 h-4">
+    <span>${tn[k]}</span></label>`).join('')}
+    </div></div>
+    <button onclick="startVerbs()" class="w-full bg-indigo-600 text-white py-4 rounded-lg font-bold text-xl hover:bg-indigo-700 mb-4">${t.start}</button>
+    <button disabled class="w-full bg-gray-300 text-gray-500 py-4 rounded-lg font-bold mb-4 cursor-not-allowed">${t.vocab} ${t.soon}</button>
+    <button onclick="goToLanguage()" class="w-full bg-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-300">🌐 ${t.changeLang}</button>
+    </div></div>`;
+}
+
+function renderStats(){
+    const t=TRANSLATIONS[state.lang].stats;
+    const list=Object.keys(state.verbStats);
+    return`<div class="max-w-4xl mx-auto"><div class="bg-white rounded-lg shadow-xl p-8">
+    <h1 class="text-3xl font-bold text-indigo-900 mb-6 text-center">${t.title}</h1>
+    <p class="text-center text-gray-600 mb-6">${state.qCount} ${t.questions}</p>
+    <div class="space-y-4">
+    ${list.map(ca=>{
+        const v=VERBS_DB.find(x=>x.ca===ca);
+        const s=state.verbStats[ca];
+        return`<div class="border rounded-lg p-4">
+        <div class="flex items-center justify-between mb-3">
+        <h3 class="font-bold text-lg">${v.ca}</h3>
+        <span class="px-3 py-1 rounded-full text-sm ${s.translation===true?'bg-green-100 text-green-800':s.translation===false?'bg-red-100 text-red-800':'bg-gray-100 text-gray-600'}">
+        ${t.translation}: ${s.translation===true?'✓':s.translation===false?'✗':'-'}</span>
+        </div>
+        <div class="grid grid-cols-3 gap-2 text-sm">
+        ${PRONOUNS.map((p,i)=>{
+            const conj=v.present[i];
+            return`<div class="text-center p-2 rounded ${s.conjs[i]===true?'bg-green-100 text-green-800':s.conjs[i]===false?'bg-red-100 text-red-800':'bg-gray-100 text-gray-600'}">
+            <div class="font-medium">${conj}</div>
+            <div class="text-xl">${s.conjs[i]===true?'✓':s.conjs[i]===false?'✗':'-'}</div>
+            </div>`;
+        }).join('')}
+        </div></div>`;
+    }).join('')}
+    </div>
+    <div class="mt-8 flex gap-4">
+    <button onclick="goToMenu()" class="flex-1 bg-gray-200 text-gray-700 py-3 rounded-lg font-bold hover:bg-gray-300">${t.menu}</button>
+    <button onclick="continueStats()" class="flex-1 bg-indigo-600 text-white py-3 rounded-lg font-bold hover:bg-indigo-700">${t.continue}</button>
+    </div></div></div>`;
+}
+
+function renderGame(){
+    if(!state.verb||!state.pron)return'';
+    const t=TRANSLATIONS[state.lang].game;
+    const tn=TRANSLATIONS[state.lang].tenses;
+    const correctAns=state.stage==='translation'?state.verb.ca:state.verb[state.tense][state.pron.i];
+    const isCorrect=state.sel===correctAns;
+    const vName=state.verb[state.lang];
+    
+    return`<div class="max-w-2xl mx-auto"><div class="bg-white rounded-lg shadow-xl p-8">
+    <div class="flex justify-between items-center mb-6">
+    <button onclick="goToMenu()" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300">${t.back}</button>
+    <div class="flex gap-2">
+    <div class="bg-purple-100 px-3 py-2 rounded-lg text-sm font-medium">${state.qCount}</div>
+    <div class="bg-indigo-100 px-3 py-2 rounded-lg font-bold">🏆 ${state.score}/${state.total}</div>
+    </div></div>
+    <div class="mb-6">
+    <div class="flex gap-2 mb-4">
+    <div class="flex-1 h-2 rounded ${state.stage==='translation'?'bg-indigo-500':'bg-green-500'}"></div>
+    <div class="flex-1 h-2 rounded ${state.stage==='conjugation'?'bg-indigo-500':'bg-gray-300'}"></div>
+    </div>
+    <p class="text-sm text-gray-600">${state.stage==='translation'?t.step1:t.step2}</p>
+    </div>
+    ${state.stage==='translation'?`<div class="mb-6">
+    <h2 class="text-2xl font-bold text-center mb-4">${t.verb}: <span class="text-indigo-600">${vName}</span></h2>
+    <p class="text-gray-600 text-center">${t.q1}</p></div>`:`<div class="mb-6">
+    <h2 class="text-2xl font-bold text-indigo-600 text-center mb-4">${state.pron.ca} _____ (${state.verb.ca}) ${t.q2} ${tn[state.tense]}</h2></div>`}
+    <div class="space-y-3">
+    ${state.opts.map(o=>`<button onclick="handleAns('${o.replace(/'/g,"\\'")}')" ${state.show?'disabled':''} 
+    class="w-full p-4 rounded-lg text-lg font-medium transition ${state.show?o===correctAns?'bg-green-500 text-white':o===state.sel?'bg-red-500 text-white':'bg-gray-100 text-gray-400':'bg-indigo-50 text-indigo-900 hover:bg-indigo-100'}">
+    <div class="flex justify-between items-center"><span>${o}</span>
+    ${state.show&&o===correctAns?'<span class="text-2xl">✓</span>':state.show&&o===state.sel&&o!==correctAns?'<span class="text-2xl">✗</span>':''}
+    </div></button>`).join('')}
+    </div>
+    ${state.show&&state.stage==='conjugation'&&!isCorrect?`<div class="mt-4 bg-blue-50 p-4 rounded-lg">
+    <h3 class="font-bold text-blue-900 mb-2">${t.full} "${state.verb.ca}" ${t.q2} ${tn[state.tense]}:</h3>
+    <div class="grid grid-cols-2 gap-2 text-sm">
+    ${PRONOUNS.map((p,i)=>`<div class="text-blue-800"><span class="font-medium">${p.ca}:</span> ${state.verb[state.tense][i]}</div>`).join('')}
+    </div></div>`:''} 
+    ${state.show?`<button onclick="next()" class="w-full mt-4 bg-indigo-600 text-white py-3 rounded-lg font-bold hover:bg-indigo-700">
+    ${state.stage==='conjugation'||!isCorrect?t.next:t.ok}</button>`:''}
+    </div></div>`;
+}
+
+function render(){
+    const screens={language:renderLang,menu:renderMenu,verbs:renderGame,stats:renderStats};
+    document.getElementById('app').innerHTML=screens[state.screen]();
+}
+
+render();
     </script>
 </body>
 </html>
