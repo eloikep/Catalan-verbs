@@ -11,22 +11,22 @@
     <script>
 // ==================== BASE DE DONNÉES ====================
 const VERBS_DB = [
-    {fr:'être',es:'ser',ca:'ser',present:['soc','ets','és','som','sou','són'],subjunctive:['sigui','siguis','sigui','siguem','sigueu','siguin']},
-    {fr:'avoir',es:'tener',ca:'tenir',present:['tinc','tens','té','tenim','teniu','tenen'],subjunctive:['tingui','tinguis','tingui','tinguem','tingueu','tinguin']},
-    {fr:'aller',es:'ir',ca:'anar',present:['vaig','vas','va','anem','aneu','van'],subjunctive:['vagi','vagis','vagi','anem','aneu','vagin']},
-    {fr:'faire',es:'hacer',ca:'fer',present:['faig','fas','fa','fem','feu','fan'],subjunctive:['faci','facis','faci','fem','feu','facin']},
-    {fr:'pouvoir',es:'poder',ca:'poder',present:['puc','pots','pot','podem','podeu','poden'],subjunctive:['pugui','puguis','pugui','puguem','pugueu','puguin']},
-    {fr:'vouloir',es:'querer',ca:'voler',present:['vull','vols','vol','volem','voleu','volen'],subjunctive:['vulgui','vulguis','vulgui','vulguem','vulgueu','vulguin']},
-    {fr:'dire',es:'decir',ca:'dir',present:['dic','dius','diu','diem','dieu','diuen'],subjunctive:['digui','diguis','digui','diguem','digueu','diguin']},
-    {fr:'venir',es:'venir',ca:'venir',present:['vinc','véns','vé','venim','veniu','vénen'],subjunctive:['vingui','vinguis','vingui','vinguem','vingueu','vinguin']},
-    {fr:'savoir',es:'saber',ca:'saber',present:['sé','saps','sap','sabem','sabeu','saben'],subjunctive:['sàpiga','sàpigues','sàpiga','sapiguem','sapigueu','sàpiguen']},
-    {fr:'voir',es:'ver',ca:'veure',present:['veig','veus','veu','veiem','veieu','veuen'],subjunctive:['vegi','vegis','vegi','vegem','vegeu','vegin']},
-    {fr:'parler',es:'hablar',ca:'parlar',present:['parlo','parles','parla','parlem','parleu','parlen'],subjunctive:['parli','parlis','parli','parlem','parleu','parlin']},
-    {fr:'vivre',es:'vivir',ca:'viure',present:['visc','vius','viu','vivim','viviu','viuen'],subjunctive:['visqui','visquis','visqui','visquem','visqueu','visquin']},
-    {fr:'écrire',es:'escribir',ca:'escriure',present:['escric','escrius','escriu','escrivim','escriviu','escriuen'],subjunctive:['escrigui','escriguis','escrigui','escriguem','escrigueu','escriguin']},
-    {fr:'servir',es:'servir',ca:'servir',present:['serveixo','serveixes','serveix','servim','serviu','serveixen'],subjunctive:['serveixi','serveixis','serveixi','servim','serviu','serveixin']},
-    {fr:'lire',es:'leer',ca:'llegir',present:['llegeixo','llegeixes','llegeix','llegim','llegiu','llegeixen'],subjunctive:['llegeixi','llegeixis','llegeixi','llegim','llegiu','llegeixin']},
-    {fr:'manger',es:'comer',ca:'menjar',present:['menjo','menges','menja','mengem','mengeu','mengen'],subjunctive:['mengi','mengis','mengi','mengem','mengeu','mengin']}
+    {fr:'être',es:'ser',ca:'ser',present:['soc','ets','és','som','sou','són'],subjunctive:['sigui','siguis','sigui','siguem','sigueu','siguin'],future:['seré','seràs','serà','serem','sereu','seran'],imperfect:['era','eres','era','érem','éreu','eren'],gerund:'essent',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'avoir',es:'tener',ca:'tenir',present:['tinc','tens','té','tenim','teniu','tenen'],subjunctive:['tingui','tinguis','tingui','tinguem','tingueu','tinguin'],future:['tindré','tindràs','tindrà','tindrem','tindreu','tindran'],imperfect:['tenia','tenies','tenia','teníem','teníeu','tenien'],gerund:'tenint',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'aller',es:'ir',ca:'anar',present:['vaig','vas','va','anem','aneu','van'],subjunctive:['vagi','vagis','vagi','anem','aneu','vagin'],future:['aniré','aniràs','anirà','anirem','anireu','aniran'],imperfect:['anava','anaves','anava','anàvem','anàveu','anaven'],gerund:'anant',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'faire',es:'hacer',ca:'fer',present:['faig','fas','fa','fem','feu','fan'],subjunctive:['faci','facis','faci','fem','feu','facin'],future:['faré','faràs','farà','farem','fareu','faran'],imperfect:['feia','feies','feia','fèiem','fèieu','feien'],gerund:'fent',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'pouvoir',es:'poder',ca:'poder',present:['puc','pots','pot','podem','podeu','poden'],subjunctive:['pugui','puguis','pugui','puguem','pugueu','puguin'],future:['podré','podràs','podrà','podrem','podreu','podran'],imperfect:['podia','podies','podia','podíem','podíeu','podien'],gerund:'podent',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'vouloir',es:'querer',ca:'voler',present:['vull','vols','vol','volem','voleu','volen'],subjunctive:['vulgui','vulguis','vulgui','vulguem','vulgueu','vulguin'],future:['voldré','voldràs','voldrà','voldrem','voldreu','voldran'],imperfect:['volia','volies','volia','volíem','volíeu','volien'],gerund:'volent',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'dire',es:'decir',ca:'dir',present:['dic','dius','diu','diem','dieu','diuen'],subjunctive:['digui','diguis','digui','diguem','digueu','diguin'],future:['diré','diràs','dirà','direm','direu','diran'],imperfect:['deia','deies','deia','dèiem','dèieu','deien'],gerund:'dient',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'venir',es:'venir',ca:'venir',present:['vinc','véns','vé','venim','veniu','vénen'],subjunctive:['vingui','vinguis','vingui','vinguem','vingueu','vinguin'],future:['vindré','vindràs','vindrà','vindrem','vindreu','vindran'],imperfect:['venia','venies','venia','veníem','veníeu','venien'],gerund:'venint',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'savoir',es:'saber',ca:'saber',present:['sé','saps','sap','sabem','sabeu','saben'],subjunctive:['sàpiga','sàpigues','sàpiga','sapiguem','sapigueu','sàpiguen'],future:['sabré','sabràs','sabrà','sabrem','sabreu','sabran'],imperfect:['sabia','sabies','sabia','sabíem','sabíeu','sabien'],gerund:'sabent',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'voir',es:'ver',ca:'veure',present:['veig','veus','veu','veiem','veieu','veuen'],subjunctive:['vegi','vegis','vegi','vegem','vegeu','vegin'],future:['veuré','veuràs','veurà','veurem','veureu','veuran'],imperfect:['veia','veies','veia','vèiem','vèieu','veien'],gerund:'veient',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'parler',es:'hablar',ca:'parlar',present:['parlo','parles','parla','parlem','parleu','parlen'],subjunctive:['parli','parlis','parli','parlem','parleu','parlin'],future:['parlaré','parlaràs','parlarà','parlarem','parlareu','parlaran'],imperfect:['parlava','parlaves','parlava','parlàvem','parlàveu','parlaven'],gerund:'parlant',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'vivre',es:'vivir',ca:'viure',present:['visc','vius','viu','vivim','viviu','viuen'],subjunctive:['visqui','visquis','visqui','visquem','visqueu','visquin'],future:['viuré','viuràs','viurà','viurem','viureu','viuran'],imperfect:['vivia','vivies','vivia','vivíem','vivíeu','vivien'],gerund:'vivint',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'écrire',es:'escribir',ca:'escriure',present:['escric','escrius','escriu','escrivim','escriviu','escriuen'],subjunctive:['escrigui','escriguis','escrigui','escriguem','escrigueu','escriguin'],future:['escriuré','escriuràs','escriurà','escriurem','escriureu','escriuran'],imperfect:['escrivia','escrivies','escrivia','escrivíem','escrivíeu','escrivien'],gerund:'escrivint',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'servir',es:'servir',ca:'servir',present:['serveixo','serveixes','serveix','servim','serviu','serveixen'],subjunctive:['serveixi','serveixis','serveixi','servim','serviu','serveixin'],future:['serviré','serviràs','servirà','servirem','servireu','serviran'],imperfect:['servia','servies','servia','servíem','servíeu','servien'],gerund:'servint',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'lire',es:'leer',ca:'llegir',present:['llegeixo','llegeixes','llegeix','llegim','llegiu','llegeixen'],subjunctive:['llegeixi','llegeixis','llegeixi','llegim','llegiu','llegeixin'],future:['llegiré','llegiràs','llegirà','llegirem','llegireu','llegiran'],imperfect:['llegia','llegies','llegia','llegíem','llegíeu','llegien'],gerund:'llegint',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'manger',es:'comer',ca:'menjar',present:['menjo','menges','menja','mengem','mengeu','mengen'],subjunctive:['mengi','mengis','mengi','mengem','mengeu','mengin'],future:['menjaré','menjaràs','menjarà','menjarem','menjareu','menjaran'],imperfect:['menjava','menjaves','menjava','menjàvem','menjàveu','menjaven'],gerund:'menjant',periphrastic:['vaig','vas','va','vam','vau','van']}
 ];
 
 const PRONOUNS = [
@@ -42,14 +42,14 @@ const TRANSLATIONS = {
     fr:{
         title:'Révision Catalan',
         menu:{title:'Menu Principal',verbs:'Verbes',selectTenses:'Sélectionner les temps',start:'Commencer',vocab:'Vocabulaire',soon:'(Bientôt)',changeLang:'Changer de langue'},
-        tenses:{present:'Présent',subjunctive:'Subjonctif'},
+        tenses:{present:'Présent',subjunctive:'Subjonctif',future:'Futur',imperfect:'Imparfait',gerund:'Gérondif',periphrastic:'Passé périphrastique'},
         game:{back:'← Menu',step1:'Étape 1: Traduction',step2:'Étape 2: Conjugaison',verb:'Verbe',q1:'Quelle est la traduction en catalan ?',q2:'au',full:'Conjugaison complète de',next:'Question suivante',ok:'OK, continuer'},
         stats:{title:'Récapitulatif',questions:'questions',translation:'Traduction',continue:'Continuer',menu:'Menu'}
     },
     es:{
         title:'Repaso Catalán',
         menu:{title:'Menú Principal',verbs:'Verbos',selectTenses:'Seleccionar tiempos',start:'Comenzar',vocab:'Vocabulario',soon:'(Próximamente)',changeLang:'Cambiar idioma'},
-        tenses:{present:'Presente',subjunctive:'Subjuntivo'},
+        tenses:{present:'Presente',subjunctive:'Subjuntivo',future:'Futuro',imperfect:'Imperfecto',gerund:'Gerundio',periphrastic:'Pasado perifrástico'},
         game:{back:'← Menú',step1:'Paso 1: Traducción',step2:'Paso 2: Conjugación',verb:'Verbo',q1:'¿Cuál es la traducción al catalán?',q2:'en',full:'Conjugación completa de',next:'Siguiente pregunta',ok:'OK, continuar'},
         stats:{title:'Resumen',questions:'preguntas',translation:'Traducción',continue:'Continuar',menu:'Menú'}
     }
@@ -75,7 +75,11 @@ function startVerbs(){
 }
 
 function initStats(ca){
-    if(!state.verbStats[ca])state.verbStats[ca]={translation:null,conjs:[null,null,null,null,null,null]};
+    if(!state.verbStats[ca])state.verbStats[ca]={
+        translation:null,
+        present:[null,null,null,null,null,null],
+        subjunctive:[null,null,null,null,null,null]
+    };
 }
 
 function genTrOpts(v){
@@ -95,6 +99,16 @@ function createTraps(correct,allForms){
 }
 
 function genConjOpts(v,idx,tense){
+    if(tense==='gerund'){
+        const correct=v.gerund;
+        const traps=createTraps(correct,[correct]);
+        return[correct,...traps.slice(0,3)].sort(()=>Math.random()-0.5);
+    }
+    if(tense==='periphrastic'){
+        const correct=v.periphrastic[idx];
+        const traps=['vais','vaijo','vago','vais a'];
+        return[correct,...traps.sort(()=>Math.random()-0.5).slice(0,3)].sort(()=>Math.random()-0.5);
+    }
     const correct=v[tense][idx];
     const allForms=v[tense];
     const opts=[correct];
@@ -131,7 +145,7 @@ function handleAns(ans){
     }else{
         const correct=state.verb[state.tense][state.pron.i];
         const ok=ans===correct;
-        state.verbStats[state.verb.ca].conjs[state.pron.i]=ok;
+        state.verbStats[state.verb.ca][state.tense][state.pron.i]=ok;
         if(ok)state.score++;
         state.total++;state.qCount++;
         render();
@@ -176,6 +190,7 @@ function renderMenu(){
 
 function renderStats(){
     const t=TRANSLATIONS[state.lang].stats;
+    const tn=TRANSLATIONS[state.lang].tenses;
     const list=Object.keys(state.verbStats);
     return`<div class="max-w-4xl mx-auto"><div class="bg-white rounded-lg shadow-xl p-8">
     <h1 class="text-3xl font-bold text-indigo-900 mb-6 text-center">${t.title}</h1>
@@ -190,15 +205,20 @@ function renderStats(){
         <span class="px-3 py-1 rounded-full text-sm ${s.translation===true?'bg-green-100 text-green-800':s.translation===false?'bg-red-100 text-red-800':'bg-gray-100 text-gray-600'}">
         ${t.translation}: ${s.translation===true?'✓':s.translation===false?'✗':'-'}</span>
         </div>
+        ${Object.keys(state.tenses).filter(k=>state.tenses[k]).map(tense=>`
+        <div class="mb-3">
+        <h4 class="text-sm font-semibold text-gray-700 mb-2">${tn[tense]}</h4>
         <div class="grid grid-cols-3 gap-2 text-sm">
         ${PRONOUNS.map((p,i)=>{
-            const conj=v.present[i];
-            return`<div class="text-center p-2 rounded ${s.conjs[i]===true?'bg-green-100 text-green-800':s.conjs[i]===false?'bg-red-100 text-red-800':'bg-gray-100 text-gray-600'}">
+            const conj=v[tense][i];
+            const stat=s[tense]?s[tense][i]:null;
+            return`<div class="text-center p-2 rounded ${stat===true?'bg-green-100 text-green-800':stat===false?'bg-red-100 text-red-800':'bg-gray-100 text-gray-600'}">
             <div class="font-medium">${conj}</div>
-            <div class="text-xl">${s.conjs[i]===true?'✓':s.conjs[i]===false?'✗':'-'}</div>
+            <div class="text-xl">${stat===true?'✓':stat===false?'✗':'-'}</div>
             </div>`;
         }).join('')}
-        </div></div>`;
+        </div></div>`).join('')}
+        </div>`;
     }).join('')}
     </div>
     <div class="mt-8 flex gap-4">
@@ -230,9 +250,13 @@ function renderGame(){
     <p class="text-sm text-gray-600">${state.stage==='translation'?t.step1:t.step2}</p>
     </div>
     ${state.stage==='translation'?`<div class="mb-6">
-    <h2 class="text-2xl font-bold text-center mb-4">${t.verb}: <span class="text-indigo-600">${vName}</span></h2>
-    <p class="text-gray-600 text-center">${t.q1}</p></div>`:`<div class="mb-6">
-    <h2 class="text-2xl font-bold text-indigo-600 text-center mb-4">${state.pron.ca} _____ (${state.verb.ca}) ${t.q2} ${tn[state.tense]}</h2></div>`}
+<h2 class="text-2xl font-bold text-center mb-4">${t.verb}: <span class="text-indigo-600">${vName}</span></h2>
+<p class="text-gray-600 text-center">${t.q1}</p></div>`:`<div class="mb-6">
+<h2 class="text-2xl font-bold text-indigo-600 text-center mb-4">${
+    state.tense==='gerund'?`Estic _____ (${state.verb.ca})`:
+    state.tense==='periphrastic'?`${state.pron.ca} _____ ${state.verb.ca}`:
+    `${state.pron.ca} _____ (${state.verb.ca}) ${t.q2} ${tn[state.tense]}`
+}</h2></div>`}
     <div class="space-y-3">
     ${state.opts.map(o=>`<button onclick="handleAns('${o.replace(/'/g,"\\'")}')" ${state.show?'disabled':''} 
     class="w-full p-4 rounded-lg text-lg font-medium transition ${state.show?o===correctAns?'bg-green-500 text-white':o===state.sel?'bg-red-500 text-white':'bg-gray-100 text-gray-400':'bg-indigo-50 text-indigo-900 hover:bg-indigo-100'}">
