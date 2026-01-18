@@ -58,13 +58,13 @@ const TRANSLATIONS = {
 // ==================== ÉTAT GLOBAL ====================
 let state = {
     screen:'language',lang:null,stage:'translation',verb:null,pron:null,opts:[],sel:null,show:false,
-    score:0,total:0,qCount:0,tenses:{present:true,subjunctive:false,future:false,imperfect:false,gerund:false,periphrastic:false},tense:null,verbStats:{}
+    score:0,total:0,qCount:0,tenses:{present:true,subjunctive:false,future:false,imperfect:false,periphrastic:false},tense:null,verbStats:{}
 };
 
 // ==================== FONCTIONS PRINCIPALES ====================
 function selectLanguage(l){state.lang=l;state.screen='menu';render();}
 function goToMenu(){state.screen='menu';render();}
-function goToLanguage(){state={screen:'language',lang:null,stage:'translation',verb:null,pron:null,opts:[],sel:null,show:false,score:0,total:0,qCount:0,tenses:{present:true,subjunctive:false,future:false,imperfect:false,gerund:false,periphrastic:false},tense:null,verbStats:{}};render();}
+function goToLanguage(){state={screen:'language',lang:null,stage:'translation',verb:null,pron:null,opts:[],sel:null,show:false,score:0,total:0,qCount:0,tenses:{present:true,subjunctive:false,future:false,imperfect:false,periphrastic:false},tense:null,verbStats:{}};render();}
 function toggleTense(t){state.tenses[t]=!state.tenses[t];render();}
 
 function startVerbs(){
