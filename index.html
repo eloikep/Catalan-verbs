@@ -39,31 +39,108 @@ const PRONOUNS = [
 ];
 
 const TRANSLATIONS = {
-    fr:{
-        title:'Révision Catalan',
-        menu:{title:'Menu Principal',verbs:'Verbes',selectTenses:'Sélectionner les temps',start:'Commencer',vocab:'Vocabulaire',soon:'(Bientôt)',changeLang:'Changer de langue'},
-        tenses:{present:'Présent',subjunctive:'Subjonctif',future:'Futur',imperfect:'Imparfait',gerund:'Gérondif',periphrastic:'Passé périphrastique'},
-        game:{back:'← Menu',step1:'Étape 1: Traduction',step2:'Étape 2: Conjugaison',verb:'Verbe',q1:'Quelle est la traduction en catalan ?',q2:'au',full:'Conjugaison complète de',next:'Question suivante',ok:'OK, continuer'},
-        stats:{title:'Récapitulatif',questions:'questions',translation:'Traduction',continue:'Continuer',menu:'Menu'}
+    fr: {
+        title: 'Révision Catalan',
+        menu: {
+            title: 'Menu Principal',
+            verbs: 'Verbes',
+            selectTenses: 'Sélectionner les temps',
+            start: 'Commencer',
+            vocab: 'Vocabulaire',
+            soon: '(Bientôt)',
+            changeLang: 'Changer de langue'
+        },
+        tenses: {
+            present: 'Présent',
+            subjunctive: 'Subjonctif',
+            future: 'Futur',
+            imperfect: 'Imparfait',
+            gerund: 'Gérondif',
+            periphrastic: 'Passé périphrastique'
+        },
+        game: {
+            back: '← Menu',
+            step1: 'Étape 1: Traduction',
+            step2: 'Étape 2: Conjugaison',
+            verb: 'Verbe',
+            q1: 'Quelle est la traduction en catalan ?',
+            q2: 'au',
+            full: 'Conjugaison complète de',
+            next: 'Question suivante',
+            ok: 'OK, continuer',
+	    reviewMode: "Mode Révision : Correction des erreurs"
+        },
+        stats: {
+            title: 'Récapitulatif',
+            questions: 'questions',
+            translation: 'Traduction',
+            continue: 'Continuer',
+            menu: 'Menu',
+            // Nouveaux champs pour renderStats
+            detailTitle: 'Détail par verbe',
+            congrats: 'Félicitations ! Tes 10 derniers verbes sont parfaits. ✨',
+            focus: "Points d'attention (2 pires verbes) :",
+	    retryButton: "Revoir les verbes problématiques"
+        }
     },
-    es:{
-        title:'Repaso Catalán',
-        menu:{title:'Menú Principal',verbs:'Verbos',selectTenses:'Seleccionar tiempos',start:'Comenzar',vocab:'Vocabulario',soon:'(Próximamente)',changeLang:'Cambiar idioma'},
-        tenses:{present:'Presente',subjunctive:'Subjuntivo',future:'Futuro',imperfect:'Imperfecto',gerund:'Gerundio',periphrastic:'Pasado perifrástico'},
-        game:{back:'← Menú',step1:'Paso 1: Traducción',step2:'Paso 2: Conjugación',verb:'Verbo',q1:'¿Cuál es la traducción al catalán?',q2:'en',full:'Conjugación completa de',next:'Siguiente pregunta',ok:'OK, continuar'},
-        stats:{title:'Resumen',questions:'preguntas',translation:'Traducción',continue:'Continuar',menu:'Menú'}
+    es: {
+        title: 'Repaso Catalán',
+        menu: {
+            title: 'Menú Principal',
+            verbs: 'Verbos',
+            selectTenses: 'Seleccionar tiempos',
+            start: 'Comenzar',
+            vocab: 'Vocabulario',
+            soon: '(Próximamente)',
+            changeLang: 'Cambiar idioma'
+        },
+        tenses: {
+            present: 'Presente',
+            subjunctive: 'Subjuntivo',
+            future: 'Futuro',
+            imperfect: 'Imperfecto',
+            gerund: 'Gerundio',
+            periphrastic: 'Pasado perifrástico'
+        },
+        game: {
+            back: '← Menú',
+            step1: 'Paso 1: Traducción',
+            step2: 'Paso 2: Conjugación',
+            verb: 'Verbo',
+            q1: '¿Cuál es la traducción al catalán?',
+            q2: 'en',
+            full: 'Conjugación completa de',
+            next: 'Siguiente pregunta',
+            ok: 'OK, continuar',
+	    reviewMode: "Modo Revisión: Corrección de errores"
+        },
+        stats: {
+            title: 'Resumen',
+            questions: 'preguntas',
+            translation: 'Traducción',
+            continue: 'Continuar',
+            menu: 'Menú',
+            // Nouveaux champs pour renderStats
+            detailTitle: 'Detalle por verbo',
+            congrats: '¡Felicidades! Tus últimos 10 verbos son perfectos. ✨',
+            focus: 'Puntos de atención (2 peores verbos):',
+	    retryButton: "Repasar verbos con errores"
+        }
     }
 };
-
 // ==================== ÉTAT GLOBAL ====================
 let state = {
     screen:'language',lang:null,stage:'translation',verb:null,pron:null,opts:[],sel:null,show:false,
-    score:0,total:0,qCount:0,tenses:{present:true,subjunctive:false,future:false,imperfect:false,periphrastic:false},tense:null,verbStats:{}
+    score:0,total:0,qCount:0,tenses:{present:true,subjunctive:false,future:false,imperfect:false,periphrastic:false},tense:null,verbStats:{},pool:null
 };
 
 // ==================== FONCTIONS PRINCIPALES ====================
 function selectLanguage(l){state.lang=l;state.screen='menu';render();}
-function goToMenu(){state.screen='menu';render();}
+function goToMenu() {
+    state.pool = null; // Important pour ne pas rester bloqué en mode révision
+    state.screen = 'menu';
+    render();
+}
 function goToLanguage(){state={screen:'language',lang:null,stage:'translation',verb:null,pron:null,opts:[],sel:null,show:false,score:0,total:0,qCount:0,tenses:{present:true,subjunctive:false,future:false,imperfect:false,periphrastic:false},tense:null,verbStats:{}};render();}
 function toggleTense(t){state.tenses[t]=!state.tenses[t];render();}
 
@@ -74,16 +151,16 @@ function startVerbs(){
     startQ();
 }
 
-function initStats(ca){
-    if(!state.verbStats[ca])state.verbStats[ca]={
-        translation:null,
-        present:[null,null,null,null,null,null],
-        subjunctive:[null,null,null,null,null,null],
-        future:[null,null,null,null,null,null],
-        imperfect:[null,null,null,null,null,null],
-        gerund:[null],
-        periphrastic:[null,null,null,null,null,null]
-    };
+function initStats(ca) {
+    if (!state.verbStats[ca]) {
+        state.verbStats[ca] = { 
+            translation: { ok: 0, total: 0 } 
+        };
+        Object.keys(state.tenses).forEach(t => {
+            // On crée un tableau de 6 objets (un par personne)
+            state.verbStats[ca][t] = Array.from({ length: 6 }, () => ({ ok: 0, total: 0 }));
+        });
+    }
 }
 
 function genTrOpts(v){
@@ -122,40 +199,63 @@ function genConjOpts(v,idx,tense){
     return[correct,...pool.sort(()=>Math.random()-0.5).slice(0,3)].sort(()=>Math.random()-0.5);
 }
 
-function startQ(){
-    const active=Object.keys(state.tenses).filter(k=>state.tenses[k]);
-    const tense=active[Math.floor(Math.random()*active.length)];
-    const verb=VERBS_DB[Math.floor(Math.random()*VERBS_DB.length)];
-    const pron=PRONOUNS[Math.floor(Math.random()*PRONOUNS.length)];
+// Dans ton objet state initial, ajoute :
+// state.pool = null; 
+
+function startQ() {
+    const active = Object.keys(state.tenses).filter(k => state.tenses[k]);
+    const tense = active[Math.floor(Math.random() * active.length)];
+    const pron = PRONOUNS[Math.floor(Math.random() * PRONOUNS.length)];
+
+    // LOGIQUE DE SÉLECTION : Si state.pool existe, on pioche dedans, sinon dans VERBS_DB
+    const source = state.pool || VERBS_DB;
+    const verb = source[Math.floor(Math.random() * source.length)];
+
     initStats(verb.ca);
-    state.verb=verb;state.pron=pron;state.tense=tense;state.stage='translation';
-    state.opts=genTrOpts(verb);state.sel=null;state.show=false;
+    state.verb = verb; 
+    state.pron = pron; 
+    state.tense = tense; 
+    state.stage = 'translation';
+    state.opts = genTrOpts(verb); 
+    state.sel = null; 
+    state.show = false;
     render();
 }
 
-function handleAns(ans){
-    state.sel=ans;state.show=true;
-    if(state.stage==='translation'){
-        const ok=ans===state.verb.ca;
-        state.verbStats[state.verb.ca].translation=ok;
-	// Système de points : +0.5 si juste et +0.5 pour le total
-        if(ok) state.score += 0.5;
-        state.total++;
-        if(ok){
-            state.stage='conjugation';
-            state.opts=genConjOpts(state.verb,state.pron.i,state.tense);
-            state.sel=null;state.show=false;
-            render();
+function handleAns(ans) {
+    state.sel = ans;
+    state.show = true;
+
+    if (state.stage === 'translation') {
+        const isCorrect = ans === state.verb.ca;
+        
+        // Mise à jour du compteur de traduction
+        state.verbStats[state.verb.ca].translation.total++;
+        if (isCorrect) {
+            state.verbStats[state.verb.ca].translation.ok++;
+            state.score += 0.5;
         }
-	// SI FAUX : On ne fait rien d'autre. 
-        // render() est appelé à la fin, donc l'erreur s'affiche et le bouton "next" apparaît.
-	render();
-    }else{
-	// Logique de conjugaison
-        const correct=state.verb[state.tense][state.pron.i];
-        const ok=ans===correct;
-        state.verbStats[state.verb.ca][state.tense][state.pron.i]=ok;
-        if(ok)state.score+=0.5;
+        
+        state.total++;
+        if (isCorrect) {
+            state.stage = 'conjugation';
+            state.opts = genConjOpts(state.verb, state.pron.i, state.tense);
+            state.sel = null;
+            state.show = false;
+        }
+        render();
+    } else {
+        const correct = state.verb[state.tense][state.pron.i];
+        const isCorrect = ans === correct;
+
+        // Mise à jour du compteur de conjugaison (temps + personne)
+        const stat = state.verbStats[state.verb.ca][state.tense][state.pron.i];
+        stat.total++;
+        if (isCorrect) {
+            stat.ok++;
+            state.score += 0.5;
+        }
+
         state.qCount++;
         render();
     }
@@ -180,8 +280,35 @@ function next(){
     }
 }
 
+function retryErrors() {
+	const verbsWithErrors = Object.keys(state.verbStats).filter(ca => {
+        const s = state.verbStats[ca];
+        const hasTrErr = s.translation.total > 0 && s.translation.ok < s.translation.total;
+        const hasConjErr = Object.keys(state.tenses).some(t => 
+            s[t] && s[t].some(st => st.total > 0 && st.ok < st.total)
+        );
+        return hasTrErr || hasConjErr;
+    });
 
-function continueStats(){state.screen='verbs';startQ();}
+    if (verbsWithErrors.length === 0) return;
+
+    // On prépare le pool d'erreurs
+    state.pool = VERBS_DB.filter(v => verbsWithErrors.includes(v.ca));
+    
+    // On réinitialise seulement le compteur de la série, pas le score global
+    state.qCount = 0;
+    state.screen = 'verbs';
+    startQ();
+}
+
+function continueStats() {
+    state.pool = null; // On repasse en mode normal (pioche dans tout VERBS_DB)
+    state.qCount = 0;
+    state.screen = 'verbs';
+    startQ();
+}
+
+
 
 // ==================== RENDU ====================
 function renderLang(){
@@ -212,44 +339,215 @@ function renderMenu(){
     </div></div>`;
 }
 
-function renderStats(){
-    const t=TRANSLATIONS[state.lang].stats;
-    const tn=TRANSLATIONS[state.lang].tenses;
-    const list=Object.keys(state.verbStats);
-    return`<div class="max-w-4xl mx-auto"><div class="bg-white rounded-lg shadow-xl p-8">
-    <h1 class="text-3xl font-bold text-indigo-900 mb-6 text-center">${t.title}</h1>
-    <p class="text-center text-gray-600 mb-6">${state.qCount} ${t.questions}</p>
-    <div class="space-y-4">
-    ${list.map(ca=>{
-        const v=VERBS_DB.find(x=>x.ca===ca);
-        const s=state.verbStats[ca];
-        return`<div class="border rounded-lg p-4">
-        <div class="flex items-center justify-between mb-3">
-        <h3 class="font-bold text-lg">${v.ca}</h3>
-        <span class="px-3 py-1 rounded-full text-sm ${s.translation===true?'bg-green-100 text-green-800':s.translation===false?'bg-red-100 text-red-800':'bg-gray-100 text-gray-600'}">
-        ${t.translation}: ${s.translation===true?'✓':s.translation===false?'✗':'-'}</span>
-        </div>
-        ${Object.keys(state.tenses).filter(k=>state.tenses[k]).map(tense=>`
-        <div class="mb-3">
-        <h4 class="text-sm font-semibold text-gray-700 mb-2">${tn[tense]}</h4>
-        <div class="grid grid-cols-3 gap-2 text-sm">
-        ${PRONOUNS.map((p,i)=>{
-            const conj=v[tense][i];
-            const stat=s[tense]?s[tense][i]:null;
-            return`<div class="text-center p-2 rounded ${stat===true?'bg-green-100 text-green-800':stat===false?'bg-red-100 text-red-800':'bg-gray-100 text-gray-600'}">
-            <div class="font-medium">${conj}</div>
-            <div class="text-xl">${stat===true?'✓':stat===false?'✗':'-'}</div>
-            </div>`;
-        }).join('')}
-        </div></div>`).join('')}
-        </div>`;
-    }).join('')}
+function renderStats() {
+    const lang = state.lang;
+    const t = TRANSLATIONS[lang].stats;
+    const tn = TRANSLATIONS[lang].tenses;
+    const list = Object.keys(state.verbStats);
+
+    // --- 1. CALCULS DES SCORES & RANKINGS ---
+    let totalCorrect = 0;
+    let totalPossible = 0;
+    const scoresByTense = { translation: { ok: 0, total: 0 } };
+    const verbRankings = [];
+
+    list.forEach(ca => {
+        const s = state.verbStats[ca];
+        const v = VERBS_DB.find(x => x.ca === ca);
+        let verbCorrect = 0;
+        let verbTotal = 0;
+
+        // Traduction
+        if (s.translation.total > 0) {
+            scoresByTense.translation.ok += s.translation.ok;
+            scoresByTense.translation.total += s.translation.total;
+            verbCorrect += s.translation.ok;
+            verbTotal += s.translation.total;
+        }
+
+        // Conjugaisons
+        Object.keys(state.tenses).forEach(tense => {
+            if (state.tenses[tense] && s[tense]) {
+                if (!scoresByTense[tense]) scoresByTense[tense] = { ok: 0, total: 0 };
+                s[tense].forEach(stat => {
+                    if (stat.total > 0) {
+                        scoresByTense[tense].ok += stat.ok;
+                        scoresByTense[tense].total += stat.total;
+                        verbCorrect += stat.ok;
+                        verbTotal += stat.total;
+                    }
+                });
+            }
+        });
+
+        totalCorrect += verbCorrect;
+        totalPossible += verbTotal;
+        
+        if (verbTotal > 0) {
+            verbRankings.push({ 
+                ca: ca, 
+                display: v.ca.toUpperCase(),
+                ratio: verbCorrect / verbTotal
+            });
+        }
+    });
+
+    // --- LOGIQUE DES 10 DERNIERS & PIRES VERBES ---
+    // Les 10 derniers verbes testés
+    const last10Entries = verbRankings.slice(-10);
+    const perfectLast10 = last10Entries.length > 0 && last10Entries.every(v => v.ratio === 1);
+    
+    // Les 2 pires sur toute la session (uniquement ceux qui ont des erreurs)
+    const worstVerbs = [...verbRankings]
+        .filter(v => v.ratio < 1)
+        .sort((a, b) => a.ratio - b.ratio)
+        .slice(0, 2);
+   
+    // On ajoute les boutons d'erreurs	
+    const hasGlobalErrors = list.some(ca => {
+    const s = state.verbStats[ca];
+    const trErr = s.translation.ok < s.translation.total;
+    const conjErr = Object.keys(state.tenses).some(t => 
+        s[t] && s[t].some(st => st.total > 0 && st.ok < st.total)
+    );
+    return trErr || conjErr;
+});
+
+
+    // --- 2. RENDU HTML ---
+return `
+<div class="max-w-4xl mx-auto relative">
+    <div class="absolute -top-2 right-4 bg-indigo-600 text-white px-6 py-3 rounded-2xl shadow-lg z-10 font-black text-xl">
+        ${totalCorrect} / ${totalPossible}
     </div>
-    <div class="mt-8 flex gap-4">
-    <button onclick="goToMenu()" class="flex-1 bg-gray-200 text-gray-700 py-3 rounded-lg font-bold hover:bg-gray-300">${t.menu}</button>
-    <button onclick="continueStats()" class="flex-1 bg-indigo-600 text-white py-3 rounded-lg font-bold hover:bg-indigo-700">${t.continue}</button>
-    </div></div></div>`;
+
+    <div class="bg-white rounded-lg shadow-xl p-8 pt-12">
+        <h1 class="text-3xl font-bold text-indigo-900 mb-6 text-center">${t.title}</h1>
+        
+        <div class="flex flex-wrap gap-4 mb-8">
+            <button onclick="goToMenu()" class="flex-1 min-w-[120px] bg-gray-100 text-gray-700 py-3 rounded-lg font-bold hover:bg-gray-200 transition">
+                ${t.menu}
+            </button>
+            ${hasGlobalErrors ? `
+                <button onclick="retryErrors()" class="flex-1 min-w-[120px] bg-orange-500 text-white py-3 rounded-lg font-bold hover:bg-orange-600 transition shadow-md">
+                    ${t.retryButton}
+                </button>
+            ` : ''}
+            <button onclick="continueStats()" class="flex-1 min-w-[120px] bg-indigo-600 text-white py-3 rounded-lg font-bold hover:bg-indigo-700 transition shadow-md">
+                ${t.continue}
+            </button>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+            <div class="bg-amber-50 p-3 rounded-xl border border-amber-100 text-center">
+                <div class="text-[10px] font-black text-amber-400 uppercase tracking-widest">${t.translation}</div>
+                <div class="text-lg font-bold text-amber-900">${scoresByTense.translation.ok}/${scoresByTense.translation.total}</div>
+            </div>
+            ${Object.keys(scoresByTense).filter(k => k !== 'translation').map(tense => `
+                <div class="bg-indigo-50 p-3 rounded-xl border border-indigo-100 text-center">
+                    <div class="text-[10px] font-black text-indigo-400 uppercase tracking-widest">${tn[tense]}</div>
+                    <div class="text-lg font-bold text-indigo-900">${scoresByTense[tense].ok}/${scoresByTense[tense].total}</div>
+                </div>
+            `).join('')}
+        </div>
+
+        <div class="mb-10 p-5 rounded-2xl border-2 ${perfectLast10 ? 'bg-green-50 border-green-200' : 'bg-orange-50 border-orange-200'}">
+            ${perfectLast10 
+                ? `<p class="text-green-800 font-bold text-center">🌟 ${t.congrats}</p>`
+                : `<div>
+                    <p class="text-orange-900 font-bold mb-2 uppercase text-xs tracking-wider">${t.focus}</p>
+                    <div class="flex gap-2">
+                        ${worstVerbs.length > 0 
+                            ? worstVerbs.map(v => `<span class="bg-orange-600 text-white px-3 py-1 rounded-lg font-black shadow-sm">${v.display}</span>`).join('')
+                            : `<span class="text-orange-800 italic text-sm">Pas assez de données.</span>`
+                        }
+                    </div>
+                   </div>`
+            }
+        </div>
+
+        <h2 class="text-xl font-black text-gray-300 mb-6 flex items-center gap-4 uppercase">
+            <span class="flex-grow h-px bg-gray-100"></span> ${t.detailTitle} <span class="flex-grow h-px bg-gray-100"></span>
+        </h2>
+
+        <div class="space-y-6">
+            ${list.map(ca => {
+                const v = VERBS_DB.find(x => x.ca === ca);
+                const s = state.verbStats[ca];
+                if (!s || s.translation.total === 0) return '';
+
+                let cOk = 0, cTot = 0;
+                Object.keys(state.tenses).forEach(tense => {
+                    if (state.tenses[tense] && s[tense]) {
+                        s[tense].forEach(st => { cOk += st.ok; cTot += st.total; });
+                    }
+                });
+
+                const trRatio = s.translation.ok / s.translation.total;
+                const trColor = trRatio === 1 ? 'bg-green-500' : (trRatio === 0 ? 'bg-red-500' : 'bg-orange-500');
+
+                return `
+                <div class="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
+                    <div class="flex justify-between items-start mb-6">
+                        <div>
+                            <div class="flex items-center gap-3 mb-1">
+                                <h3 class="text-2xl font-black text-indigo-900 uppercase">${v.ca}</h3>
+                                ${cTot > 0 ? `<span class="bg-indigo-100 text-indigo-700 text-[10px] px-2 py-0.5 rounded-full font-bold">Conj: ${Math.round((cOk/cTot)*100)}%</span>` : ''}
+                            </div>
+                            <p class="text-gray-400 italic text-sm">${v[lang]}</p>
+                        </div>
+                        <div class="${trColor} text-white px-3 py-1 rounded-lg text-[10px] font-black shadow-sm uppercase">
+                            ${t.translation}: ${s.translation.ok}/${s.translation.total}
+                        </div>
+                    </div>
+
+                    ${Object.keys(state.tenses).filter(tense => state.tenses[tense] && s[tense]).map(tense => {
+                        // On ne rend le bloc que si des questions ont été posées pour ce temps
+                        const hasTenseData = s[tense].some(stat => stat.total > 0);
+                        if (!hasTenseData) return '';
+
+                        return `
+                        <div class="bg-gray-50 rounded-xl p-4 mb-4 last:mb-0">
+                            <h4 class="text-[10px] font-black text-gray-400 uppercase mb-3 tracking-widest text-center italic">${tn[tense]}</h4>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                                ${PRONOUNS.map((p, i) => {
+                                    const stat = s[tense][i];
+                                    const hasData = stat.total > 0;
+                                    
+                                    let bgColor = 'bg-white border-white';
+                                    let textColor = 'text-indigo-900';
+                                    let dotColor = 'bg-gray-200';
+
+                                    if (hasData) {
+                                        const ratio = stat.ok / stat.total;
+                                        if (ratio === 1) { bgColor = 'bg-green-50 border-green-100'; textColor = 'text-green-900'; dotColor = 'bg-green-500'; }
+                                        else if (ratio === 0) { bgColor = 'bg-red-50 border-red-100'; textColor = 'text-red-900'; dotColor = 'bg-red-500'; }
+                                        else { bgColor = 'bg-orange-50 border-orange-100'; textColor = 'text-orange-900'; dotColor = 'bg-orange-500'; }
+                                    } else {
+                                        bgColor = 'bg-gray-100/50 border-dashed border-gray-200';
+                                        textColor = 'text-gray-300';
+                                    }
+                                    
+                                    return `
+                                        <div class="flex items-center justify-between px-3 py-2 rounded-lg border shadow-sm transition-all ${bgColor}">
+                                            <div class="flex items-center gap-2 overflow-hidden">
+                                                <div class="w-1.5 h-1.5 rounded-full shrink-0 ${dotColor}"></div>
+                                                <span class="text-sm font-bold truncate ${textColor}">${v[tense][i]}</span>
+                                            </div>
+                                            ${hasData ? `<span class="text-[9px] font-black opacity-40 ml-2 ${textColor}">${stat.ok}/${stat.total}</span>` : ''}
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>`;
+                    }).join('')}
+                </div>`;
+            }).join('')}
+        </div>
+    </div>
+</div>`;
 }
+
 
 function renderGame(){
     if(!state.verb||!state.pron)return'';
