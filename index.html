@@ -602,7 +602,7 @@ const TRANSLATIONS = {
 // ==================== ÉTAT GLOBAL ====================
 let state = {
     screen:'language',lang:null,stage:'translation',verb:null,pron:null,opts:[],sel:null,show:false,
-    score:0,total:0,qCount:0,tenses:{present:true,subjunctive:false,future:false,imperfect:false,periphrastic:false},tense:null,verbStats:{},pool:null
+    score:0,total:0,qCount:0,tenses:{present:true,subjunctive:false,future:false,imperfect:false,gerund:false,periphrastic:false},tense:null,verbStats:{},pool:null
 };
 
 // ==================== FONCTIONS PRINCIPALES ====================
@@ -648,9 +648,10 @@ function genConjOpts(v, idx, tense) {
         const manualTraps = TRAPS_DB[v.ca]?.gerund || [];
         const options = [correct];
         
-        // Ajouter pièges manuels
-        options.push(...shuffle(manualTraps));
-        
+
+	options.push(...shuffle(manualTraps.filter(t => t !== correct && !options.includes(t))));
+
+
         // Compléter avec variations automatiques si besoin
         if (options.length < 4) {
             const autoTraps = [
@@ -678,11 +679,11 @@ function genConjOpts(v, idx, tense) {
     // 1. Pièges manuels (priorité)
     const manualTraps = TRAPS_DB[v.ca]?.[tense]?.[idx] || [];
     manualTraps.forEach(trap => {
-        if (!options.includes(trap)) {
+        if (trap !== correct && !options.includes(trap)) {
             options.push(trap);
         }
     });
-    
+   
     // 2. Autres personnes du même verbe (si besoin)
     if (options.length < 4) {
         const otherPersons = v[tense]
@@ -708,7 +709,7 @@ function genConjOpts(v, idx, tense) {
             }
         });
     }
-    
+
     // S'assurer qu'on a exactement 4 options
     return shuffle(options.slice(0, 4));
 }
@@ -762,11 +763,16 @@ function handleAns(ans) {
         }
         render();
     } else {
-        const correct = state.verb[state.tense][state.pron.i];
+// --- GESTION DE L'EXCEPTION DU GÉRONDIF ---
+        const isGerund = state.tense === 'gerund';
+        
+        // Si gérondif, la réponse correcte est la string directe, sinon c'est l'index du tableau
+        const correct = isGerund ? state.verb.gerund : state.verb[state.tense][state.pron.i];
         const isCorrect = ans === correct;
 
-        // Mise à jour du compteur de conjugaison (temps + personne)
-        const stat = state.verbStats[state.verb.ca][state.tense][state.pron.i];
+        // Pour les stats, si c'est le gérondif, on stocke tout à l'index [0] pour ne pas casser ta structure
+        const idx = isGerund ? 0 : state.pron.i;
+        const stat = state.verbStats[state.verb.ca][state.tense][idx];
         stat.total++;
         if (isCorrect) {
             stat.ok++;
@@ -1070,7 +1076,12 @@ function renderGame(){
     if(!state.verb||!state.pron)return'';
     const t=TRANSLATIONS[state.lang].game;
     const tn=TRANSLATIONS[state.lang].tenses;
-    const correctAns=state.stage==='translation'?state.verb.ca:state.verb[state.tense][state.pron.i];
+    
+    // GÉRONDIF EXCEPTION : On récupère la string directe au lieu de l'index
+    const correctAns=state.stage==='translation'
+        ? state.verb.ca 
+        : (state.tense==='gerund' ? state.verb.gerund : state.verb[state.tense][state.pron.i]);
+        
     const isCorrect=state.sel===correctAns;
     const vName=state.verb[state.lang];
     
@@ -1103,15 +1114,21 @@ function renderGame(){
     ${state.show&&o===correctAns?'<span class="text-2xl">✓</span>':state.show&&o===state.sel&&o!==correctAns?'<span class="text-2xl">✗</span>':''}
     </div></button>`).join('')}
     </div>
+
     ${state.show&&state.stage==='conjugation'&&!isCorrect?`<div class="mt-4 bg-blue-50 p-4 rounded-lg">
-    <h3 class="font-bold text-blue-900 mb-2">${t.full} "${state.verb.ca}" ${t.q2} ${tn[state.tense]}:</h3>
-    <div class="grid grid-cols-2 gap-2 text-sm">
-    ${PRONOUNS.map((p,i)=>`<div class="text-blue-800"><span class="font-medium">${p.ca}:</span> ${state.verb[state.tense][i]}</div>`).join('')}
+    <h3 class="font-bold text-blue-900 mb-2 text-center uppercase text-xs tracking-widest">${t.full} "${state.verb.ca}" :</h3>
+    <div class="${state.tense==='gerund' ? 'flex justify-center' : 'grid grid-cols-2 gap-2'} text-sm">
+    ${state.tense === 'gerund' 
+        ? `<div class="text-indigo-700 text-xl font-black p-2 bg-white rounded-lg shadow-sm">${state.verb.gerund}</div>`
+        : PRONOUNS.map((p,i)=>`<div class="text-blue-800"><span class="font-medium">${p.ca}:</span> ${state.verb[state.tense][i]}</div>`).join('')
+    }
     </div></div>`:''} 
+
     ${state.show?`<button onclick="next()" class="w-full mt-4 bg-indigo-600 text-white py-3 rounded-lg font-bold hover:bg-indigo-700">
     ${state.stage==='conjugation'||!isCorrect?t.next:t.ok}</button>`:''}
     </div></div>`;
 }
+
 
 function render(){
     const screens={language:renderLang,menu:renderMenu,verbs:renderGame,stats:renderStats};
