@@ -18,7 +18,7 @@ const VERBS_DB = [
     {fr:'pouvoir',es:'poder',ca:'poder',present:['puc','pots','pot','podem','podeu','poden'],subjunctive:['pugui','puguis','pugui','puguem','pugueu','puguin'],future:['podré','podràs','podrà','podrem','podreu','podran'],imperfect:['podia','podies','podia','podíem','podíeu','podien'],gerund:'podent',periphrastic:['vaig','vas','va','vam','vau','van']},
     {fr:'vouloir',es:'querer',ca:'voler',present:['vull','vols','vol','volem','voleu','volen'],subjunctive:['vulgui','vulguis','vulgui','vulguem','vulgueu','vulguin'],future:['voldré','voldràs','voldrà','voldrem','voldreu','voldran'],imperfect:['volia','volies','volia','volíem','volíeu','volien'],gerund:'volent',periphrastic:['vaig','vas','va','vam','vau','van']},
     {fr:'dire',es:'decir',ca:'dir',present:['dic','dius','diu','diem','dieu','diuen'],subjunctive:['digui','diguis','digui','diguem','digueu','diguin'],future:['diré','diràs','dirà','direm','direu','diran'],imperfect:['deia','deies','deia','dèiem','dèieu','deien'],gerund:'dient',periphrastic:['vaig','vas','va','vam','vau','van']},
-    {fr:'venir',es:'venir',ca:'venir',present:['vinc','véns','vé','venim','veniu','vénen'],subjunctive:['vingui','vinguis','vingui','vinguem','vingueu','vinguin'],future:['vindré','vindràs','vindrà','vindrem','vindreu','vindran'],imperfect:['venia','venies','venia','veníem','veníeu','venien'],gerund:'venint',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'venir',es:'venir',ca:'venir',present:['vinc','vens','ve','venim','veniu','venen'],subjunctive:['vingui','vinguis','vingui','vinguem','vingueu','vinguin'],future:['vindré','vindràs','vindrà','vindrem','vindreu','vindran'],imperfect:['venia','venies','venia','veníem','veníeu','venien'],gerund:'venint',periphrastic:['vaig','vas','va','vam','vau','van']},
     {fr:'savoir',es:'saber',ca:'saber',present:['sé','saps','sap','sabem','sabeu','saben'],subjunctive:['sàpiga','sàpigues','sàpiga','sapiguem','sapigueu','sàpiguen'],future:['sabré','sabràs','sabrà','sabrem','sabreu','sabran'],imperfect:['sabia','sabies','sabia','sabíem','sabíeu','sabien'],gerund:'sabent',periphrastic:['vaig','vas','va','vam','vau','van']},
     {fr:'voir',es:'ver',ca:'veure',present:['veig','veus','veu','veiem','veieu','veuen'],subjunctive:['vegi','vegis','vegi','vegem','vegeu','vegin'],future:['veuré','veuràs','veurà','veurem','veureu','veuran'],imperfect:['veia','veies','veia','vèiem','vèieu','veien'],gerund:'veient',periphrastic:['vaig','vas','va','vam','vau','van']},
     {fr:'parler',es:'hablar',ca:'parlar',present:['parlo','parles','parla','parlem','parleu','parlen'],subjunctive:['parli','parlis','parli','parlem','parleu','parlin'],future:['parlaré','parlaràs','parlarà','parlarem','parlareu','parlaran'],imperfect:['parlava','parlaves','parlava','parlàvem','parlàveu','parlaven'],gerund:'parlant',periphrastic:['vaig','vas','va','vam','vau','van']},
@@ -28,6 +28,477 @@ const VERBS_DB = [
     {fr:'lire',es:'leer',ca:'llegir',present:['llegeixo','llegeixes','llegeix','llegim','llegiu','llegeixen'],subjunctive:['llegeixi','llegeixis','llegeixi','llegim','llegiu','llegeixin'],future:['llegiré','llegiràs','llegirà','llegirem','llegireu','llegiran'],imperfect:['llegia','llegies','llegia','llegíem','llegíeu','llegien'],gerund:'llegint',periphrastic:['vaig','vas','va','vam','vau','van']},
     {fr:'manger',es:'comer',ca:'menjar',present:['menjo','menges','menja','mengem','mengeu','mengen'],subjunctive:['mengi','mengis','mengi','mengem','mengeu','mengin'],future:['menjaré','menjaràs','menjarà','menjarem','menjareu','menjaran'],imperfect:['menjava','menjaves','menjava','menjàvem','menjàveu','menjaven'],gerund:'menjant',periphrastic:['vaig','vas','va','vam','vau','van']}
 ];
+
+
+
+// ==================== BASE DE PIÈGES MANUELS ====================
+const TRAPS_DB = {
+    'ser': {
+        present: {
+            0: ['so', 'soy', 'soco'],
+            1: ['est', 'es', 'estas'],
+            2: ['est', 'es', 'esta'],
+            3: ['somos', 'semos', 'somes'],
+            4: ['sois', 'seus', 'sou'],
+            5: ['son', 'són', 'sonen']
+        },
+        subjunctive: {
+            0: ['siga', 'siguia', 'sea'],
+            1: ['sigas', 'sigues', 'siguias'],
+            2: ['siga', 'sigue', 'siguia'],
+            3: ['sigamos', 'siguem', 'siguémos'],
+            4: ['sigáis', 'sigueu', 'sigui'],
+            5: ['sigan', 'siguen', 'siguian']
+        },
+        future: {
+            0: ['serai', 'seró', 'seria'],
+            1: ['seras', 'seràs', 'serias'],
+            2: ['sera', 'serà', 'seria']
+        },
+        imperfect: {
+            0: ['ero', 'erea', 'ere'],
+            1: ['eras', 'eres', 'erias'],
+            2: ['era', 'ero', 'eria']
+        },
+        gerund: ['siendo', 'sent', 'esent']
+    },
+    'tenir': {
+        present: {
+            0: ['tengo', 'tingo', 'tenc'],
+            1: ['tienes', 'tenes', 'ten'],
+            2: ['tiene', 'tene', 'ten'],
+            3: ['tenemos', 'tenem', 'tenims'],
+            4: ['tenéis', 'teneu', 'tenis'],
+            5: ['tienen', 'tenen', 'tenens']
+        },
+        subjunctive: {
+            0: ['tenga', 'tinga', 'tengui'],
+            1: ['tengas', 'tingas', 'tingues'],
+            2: ['tenga', 'tinga', 'tingue'],
+            3: ['tengamos', 'tinguem', 'tinguemos'],
+            4: ['tengáis', 'tingueu', 'tingui'],
+            5: ['tengan', 'tinguen', 'tinguan']
+        },
+        future: {
+            0: ['tendré', 'tindrai', 'tendrai'],
+            1: ['tendrás', 'tindras', 'tendras'],
+            2: ['tendrá', 'tindrà', 'tendrà']
+        },
+        imperfect: {
+            0: ['tenía', 'tenie', 'teniea'],
+            1: ['tenías', 'tenias', 'tenies'],
+            2: ['tenía', 'tenia', 'tenie']
+        },
+        gerund: ['teniendo', 'tenint', 'tenent']
+    },
+    'anar': {
+        present: {
+            0: ['voy', 'vago', 'anaig'],
+            1: ['vas', 'va', 'vais'],
+            2: ['va', 'vas', 'vai'],
+            3: ['vamos', 'anem', 'anamos'],
+            4: ['vais', 'aneu', 'anes'],
+            5: ['van', 'vanen', 'vanan']
+        },
+        subjunctive: {
+            0: ['vaya', 'vagi', 'anegi'],
+            1: ['vayas', 'vagis', 'vaguis'],
+            2: ['vaya', 'vage', 'vagi'],
+            3: ['vayamos', 'anem', 'vaguem'],
+            4: ['vayáis', 'aneu', 'vagueu'],
+            5: ['vayan', 'vagin', 'vaguen']
+        },
+        future: {
+            0: ['iré', 'anaré', 'anirai'],
+            1: ['irás', 'anaràs', 'aniras'],
+            2: ['irá', 'anará', 'anirà']
+        },
+        imperfect: {
+            0: ['iba', 'anava', 'anave'],
+            1: ['ibas', 'anaves', 'anavas'],
+            2: ['iba', 'anava', 'anave']
+        },
+        gerund: ['yendo', 'anent', 'anant']
+    },
+    'fer': {
+        present: {
+            0: ['hago', 'faço', 'fago'],
+            1: ['haces', 'fas', 'faces'],
+            2: ['hace', 'fa', 'face'],
+            3: ['hacemos', 'fem', 'fems'],
+            4: ['hacéis', 'feu', 'feis'],
+            5: ['hacen', 'fan', 'faen']
+        },
+        subjunctive: {
+            0: ['haga', 'faci', 'faga'],
+            1: ['hagas', 'facis', 'fagis'],
+            2: ['haga', 'face', 'faci'],
+            3: ['hagamos', 'fem', 'faguem'],
+            4: ['hagáis', 'feu', 'faceu'],
+            5: ['hagan', 'facin', 'fagan']
+        },
+        future: {
+            0: ['haré', 'ferei', 'farai'],
+            1: ['harás', 'feràs', 'faras'],
+            2: ['hará', 'ferà', 'farà']
+        },
+        imperfect: {
+            0: ['hacía', 'feia', 'feie'],
+            1: ['hacías', 'feies', 'feias'],
+            2: ['hacía', 'feia', 'feie']
+        },
+        gerund: ['haciendo', 'fent', 'feint']
+    },
+    'poder': {
+        present: {
+            0: ['puedo', 'podo', 'puddo'],
+            1: ['puedes', 'pots', 'podes'],
+            2: ['puede', 'pot', 'pode'],
+            3: ['podemos', 'podem', 'podoms'],
+            4: ['podéis', 'podeu', 'podes'],
+            5: ['pueden', 'poden', 'podden']
+        },
+        subjunctive: {
+            0: ['pueda', 'puga', 'pugui'],
+            1: ['puedas', 'puguis', 'pugas'],
+            2: ['pueda', 'puga', 'pugue'],
+            3: ['podamos', 'puguem', 'poguem'],
+            4: ['podáis', 'pugueu', 'podeu'],
+            5: ['puedan', 'puguin', 'puguen']
+        },
+        future: {
+            0: ['podré', 'podrai', 'podaré'],
+            1: ['podrás', 'podràs', 'podras'],
+            2: ['podrá', 'podrà', 'podra']
+        },
+        imperfect: {
+            0: ['podía', 'podia', 'podie'],
+            1: ['podías', 'podies', 'podias'],
+            2: ['podía', 'podia', 'podie']
+        },
+        gerund: ['pudiendo', 'podent', 'podint']
+    },
+    'voler': {
+        present: {
+            0: ['quiero', 'volo', 'vullo'],
+            1: ['quieres', 'vols', 'voles'],
+            2: ['quiere', 'vol', 'vole'],
+            3: ['queremos', 'volem', 'volems'],
+            4: ['queréis', 'voleu', 'voles'],
+            5: ['quieren', 'volen', 'volenn']
+        },
+        subjunctive: {
+            0: ['quiera', 'vulgui', 'volga'],
+            1: ['quieras', 'vulguis', 'volguis'],
+            2: ['quiera', 'vulgui', 'vulgue'],
+            3: ['queramos', 'vulguem', 'voguem'],
+            4: ['queráis', 'vulgueu', 'volgueu'],
+            5: ['quieran', 'vulguin', 'volguin']
+        },
+        future: {
+            0: ['querré', 'voldrai', 'voldaré'],
+            1: ['querrás', 'voldràs', 'voldras'],
+            2: ['querrá', 'voldrà', 'voldra']
+        },
+        imperfect: {
+            0: ['quería', 'volia', 'volie'],
+            1: ['querías', 'volies', 'volias'],
+            2: ['quería', 'volia', 'volie']
+        },
+        gerund: ['queriendo', 'volent', 'volint']
+    },
+    'dir': {
+        present: {
+            0: ['digo', 'dico', 'dig'],
+            1: ['dices', 'dius', 'dis'],
+            2: ['dice', 'diu', 'di'],
+            3: ['decimos', 'diem', 'dims'],
+            4: ['decís', 'dieu', 'dies'],
+            5: ['dicen', 'diuen', 'dien']
+        },
+        subjunctive: {
+            0: ['diga', 'digui', 'diga'],
+            1: ['digas', 'diguis', 'digas'],
+            2: ['diga', 'digui', 'digue'],
+            3: ['digamos', 'diguem', 'diguemos'],
+            4: ['digáis', 'digueu', 'digueu'],
+            5: ['digan', 'diguin', 'diguen']
+        },
+        future: {
+            0: ['diré', 'dirai', 'dierei'],
+            1: ['dirás', 'diràs', 'diras'],
+            2: ['dirá', 'dirà', 'dira']
+        },
+        imperfect: {
+            0: ['decía', 'deia', 'deie'],
+            1: ['decías', 'deies', 'deias'],
+            2: ['decía', 'deia', 'deie']
+        },
+        gerund: ['diciendo', 'dient', 'dint']
+    },
+    'venir': {
+        present: {
+            0: ['vengo', 'vingo', 'venc'],
+            1: ['vienes', 'véns', 'vens'],
+            2: ['viene', 'vé', 've'],
+            3: ['venimos', 'venim', 'venims'],
+            4: ['venís', 'veniu', 'venis'],
+            5: ['vienen', 'vénen', 'venen']
+        },
+        subjunctive: {
+            0: ['venga', 'vingui', 'venga'],
+            1: ['vengas', 'vinguis', 'venguis'],
+            2: ['venga', 'vingui', 'vengue'],
+            3: ['vengamos', 'vinguem', 'venguem'],
+            4: ['vengáis', 'vingueu', 'vengueu'],
+            5: ['vengan', 'vinguin', 'venguen']
+        },
+        future: {
+            0: ['vendré', 'vindrai', 'vendaré'],
+            1: ['vendrás', 'vindràs', 'vendras'],
+            2: ['vendrá', 'vindrà', 'vendra']
+        },
+        imperfect: {
+            0: ['venía', 'venia', 'venie'],
+            1: ['venías', 'venies', 'venias'],
+            2: ['venía', 'venia', 'venie']
+        },
+        gerund: ['viniendo', 'venint', 'venient']
+    },
+    'saber': {
+        present: {
+            0: ['sé', 'sapo', 'sabo'],
+            1: ['sabes', 'saps', 'sabes'],
+            2: ['sabe', 'sap', 'sabe'],
+            3: ['sabemos', 'sabem', 'sabims'],
+            4: ['sabéis', 'sabeu', 'sabes'],
+            5: ['saben', 'saben', 'sabenn']
+        },
+        subjunctive: {
+            0: ['sepa', 'sàpiga', 'sapia'],
+            1: ['sepas', 'sàpigues', 'sapias'],
+            2: ['sepa', 'sàpiga', 'sapia'],
+            3: ['sepamos', 'sapiguem', 'sapiguemos'],
+            4: ['sepáis', 'sapigueu', 'sapieu'],
+            5: ['sepan', 'sàpiguen', 'sapian']
+        },
+        future: {
+            0: ['sabré', 'sabrai', 'sabaré'],
+            1: ['sabrás', 'sabràs', 'sabras'],
+            2: ['sabrá', 'sabrà', 'sabra']
+        },
+        imperfect: {
+            0: ['sabía', 'sabia', 'sabie'],
+            1: ['sabías', 'sabies', 'sabias'],
+            2: ['sabía', 'sabia', 'sabie']
+        },
+        gerund: ['sabiendo', 'sabent', 'sabint']
+    },
+    'veure': {
+        present: {
+            0: ['veo', 'veigo', 'veg'],
+            1: ['ves', 'veus', 'ves'],
+            2: ['ve', 'veu', 've'],
+            3: ['vemos', 'veiem', 'vems'],
+            4: ['veis', 'veieu', 'ves'],
+            5: ['ven', 'veuen', 'veen']
+        },
+        subjunctive: {
+            0: ['vea', 'vegi', 'vegia'],
+            1: ['veas', 'vegis', 'veguis'],
+            2: ['vea', 'vegi', 'vege'],
+            3: ['veamos', 'vegem', 'veguem'],
+            4: ['veáis', 'vegeu', 'vegeu'],
+            5: ['vean', 'vegin', 'vegen']
+        },
+        future: {
+            0: ['veré', 'veuré', 'veurai'],
+            1: ['verás', 'veuràs', 'veuras'],
+            2: ['verá', 'veurà', 'veura']
+        },
+        imperfect: {
+            0: ['veía', 'veia', 'veie'],
+            1: ['veías', 'veies', 'veias'],
+            2: ['veía', 'veia', 'veie']
+        },
+        gerund: ['viendo', 'veient', 'veint']
+    },
+    'parlar': {
+        present: {
+            0: ['hablo', 'parlo', 'parle'],
+            1: ['hablas', 'parles', 'parlas'],
+            2: ['habla', 'parla', 'parle'],
+            3: ['hablamos', 'parlem', 'parlams'],
+            4: ['habláis', 'parleu', 'parles'],
+            5: ['hablan', 'parlen', 'parlann']
+        },
+        subjunctive: {
+            0: ['hable', 'parli', 'parle'],
+            1: ['hables', 'parlis', 'parleis'],
+            2: ['hable', 'parli', 'parle'],
+            3: ['hablemos', 'parlem', 'parliem'],
+            4: ['habléis', 'parleu', 'parlieu'],
+            5: ['hablen', 'parlin', 'parlen']
+        },
+        future: {
+            0: ['hablaré', 'parlarai', 'parlaré'],
+            1: ['hablarás', 'parlaràs', 'parlaras'],
+            2: ['hablará', 'parlarà', 'parlara']
+        },
+        imperfect: {
+            0: ['hablaba', 'parlava', 'parlave'],
+            1: ['hablabas', 'parlaves', 'parlavas'],
+            2: ['hablaba', 'parlava', 'parlave']
+        },
+        gerund: ['hablando', 'parlant', 'parlent']
+    },
+    'viure': {
+        present: {
+            0: ['vivo', 'visco', 'visc'],
+            1: ['vives', 'vius', 'vives'],
+            2: ['vive', 'viu', 'vive'],
+            3: ['vivimos', 'vivim', 'vivims'],
+            4: ['vivís', 'viveu', 'viviu', 'viueu'],
+            5: ['viven', 'viuen', 'vivenn']
+        },
+        subjunctive: {
+            0: ['viva', 'visqui', 'viva'],
+            1: ['vivas', 'visquis', 'visques'],
+            2: ['viva', 'visqui', 'visque'],
+            3: ['vivamos', 'visquem', 'visquemos'],
+            4: ['viváis', 'visqueu', 'visquieu'],
+            5: ['vivan', 'visquin', 'visquen']
+        },
+        future: {
+            0: ['viviré', 'viurai', 'viuré'],
+            1: ['vivirás', 'viuràs', 'viuras'],
+            2: ['vivirá', 'viurà', 'viura']
+        },
+        imperfect: {
+            0: ['vivía', 'vivia', 'vivie'],
+            1: ['vivías', 'vivies', 'vivias'],
+            2: ['vivía', 'vivia', 'vivie']
+        },
+        gerund: ['viviendo', 'vivint', 'vivent']
+    },
+    'escriure': {
+        present: {
+            0: ['escribo', 'escrico', 'escric'],
+            1: ['escribes', 'escrius', 'escrives'],
+            2: ['escribe', 'escriu', 'escrive'],
+            3: ['escribimos', 'escrivim', 'escrivims'],
+            4: ['escribís', 'escriveu', 'escriviu', 'escriueu'],
+            5: ['escriben', 'escriuen', 'escrivenn']
+        },
+        subjunctive: {
+            0: ['escriba', 'escrigui', 'escriva'],
+            1: ['escribas', 'escriguis', 'escrives'],
+            2: ['escriba', 'escrigui', 'escrive'],
+            3: ['escribamos', 'escriguem', 'escrivem'],
+            4: ['escribáis', 'escrigueu', 'escriveu'],
+            5: ['escriban', 'escriguin', 'escriven']
+        },
+        future: {
+            0: ['escribiré', 'escriurai', 'escriuré'],
+            1: ['escribirás', 'escriuràs', 'escriuras'],
+            2: ['escribirá', 'escriurà', 'escriura']
+        },
+        imperfect: {
+            0: ['escribía', 'escrivia', 'escrivie'],
+            1: ['escribías', 'escrivies', 'escrivias'],
+            2: ['escribía', 'escrivia', 'escrivie']
+        },
+        gerund: ['escribiendo', 'escrivint', 'escrivent']
+    },
+    'servir': {
+        present: {
+            0: ['sirvo', 'servixo', 'servisco', 'serveisco'],
+            1: ['sirves', 'servixes', 'servis', 'servix'],
+            2: ['sirve', 'servix', 'serveis', 'serveix'],
+            3: ['servimos', 'servim', 'servims'],
+            4: ['servís', 'serveu', 'serviu'],
+            5: ['sirven', 'serveixen', 'servixenn']
+        },
+        subjunctive: {
+            0: ['sirva', 'serveixi', 'servixe'],
+            1: ['sirvas', 'serveixis', 'servixes'],
+            2: ['sirva', 'serveixi', 'servixe'],
+            3: ['sirvamos', 'servim', 'serveixem'],
+            4: ['sirváis', 'serviu', 'serveixeu'],
+            5: ['sirvan', 'serveixin', 'servixen']
+        },
+        future: {
+            0: ['serviré', 'servirai', 'serverei'],
+            1: ['servirás', 'serviràs', 'serviras'],
+            2: ['servirá', 'servirà', 'servira']
+        },
+        imperfect: {
+            0: ['servía', 'servia', 'servie'],
+            1: ['servías', 'servies', 'servias'],
+            2: ['servía', 'servia', 'servie']
+        },
+        gerund: ['sirviendo', 'servindo', 'servint']
+    },
+    'llegir': {
+        present: {
+            0: ['leo', 'llegixo', 'llegisco'],
+            1: ['lees', 'llegixes', 'llegix'],
+            2: ['lee', 'llegix', 'llegeix'],
+            3: ['leemos', 'llegim', 'llegims'],
+            4: ['leéis', 'llegeu', 'llegiu'],
+            5: ['leen', 'llegeixen', 'llegixenn']
+        },
+        subjunctive: {
+            0: ['lea', 'llegeixi', 'llegixe'],
+            1: ['leas', 'llegeixis', 'llegixes'],
+            2: ['lea', 'llegeixi', 'llegixe'],
+            3: ['leamos', 'llegim', 'llegeixem'],
+            4: ['leáis', 'llegiu', 'llegeixeu'],
+            5: ['lean', 'llegeixin', 'llegixen']
+        },
+        future: {
+            0: ['leeré', 'llegirai', 'llegiré'],
+            1: ['leerás', 'llegiràs', 'llegiras'],
+            2: ['leerá', 'llegirà', 'llegira']
+        },
+        imperfect: {
+            0: ['leía', 'llegia', 'llegie'],
+            1: ['leías', 'llegies', 'llegias'],
+            2: ['leía', 'llegia', 'llegie']
+        },
+        gerund: ['leyendo', 'llegindo', 'llegint']
+    },
+    'menjar': {
+        present: {
+            0: ['como', 'menjo', 'menge'],
+            1: ['comes', 'menges', 'menjas'],
+            2: ['come', 'menja', 'menje'],
+            3: ['comemos', 'mengem', 'menjams'],
+            4: ['coméis', 'mengeu', 'menjes'],
+            5: ['comen', 'mengen', 'menjann']
+        },
+        subjunctive: {
+            0: ['coma', 'mengi', 'menje'],
+            1: ['comas', 'mengis', 'menjis'],
+            2: ['coma', 'mengi', 'menje'],
+            3: ['comamos', 'mengem', 'mengiem'],
+            4: ['comáis', 'mengeu', 'mengieu'],
+            5: ['coman', 'mengin', 'menjen']
+        },
+        future: {
+            0: ['comeré', 'menjarai', 'menjaré'],
+            1: ['comerás', 'menjaràs', 'menjaras'],
+            2: ['comerá', 'menjará', 'menjara']
+        },
+        imperfect: {
+            0: ['comía', 'menjava', 'menjave'],
+            1: ['comías', 'menjaves', 'menjavas'],
+            2: ['comía', 'menjava', 'menjave']
+        },
+        gerund: ['comiendo', 'menjando', 'menjant']
+    }
+};
+
 
 const PRONOUNS = [
     {ca:'jo',fr:'je',es:'yo',i:0},
@@ -168,39 +639,85 @@ function genTrOpts(v){
     return[v.ca,...d].sort(()=>Math.random()-0.5);
 }
 
-function createTraps(correct,allForms){
-    const t=[];
-    if(correct.includes('eix')){t.push(correct.replace('eix','ix'),correct.replace('eix','ieix'));}
-    if(correct.includes('iu')){t.push(correct.replace('iu','ieu'),correct.replace('iu','iueu'));}
-    if(correct.includes('visc')){t.push('visco','viscu');}
-    if(correct.endsWith('c')&&!correct.includes('esc'))t.push(correct+'o');
-    if(correct.includes('prenc')){t.push('prend','preno');}
-    if(correct.includes('serv'))t.push(correct.replace('eix','is'));
-    return t.filter(x=>!allForms.includes(x));
+
+
+function genConjOpts(v, idx, tense) {
+    // Cas spéciaux
+    if (tense === 'gerund') {
+        const correct = v.gerund;
+        const manualTraps = TRAPS_DB[v.ca]?.gerund || [];
+        const options = [correct];
+        
+        // Ajouter pièges manuels
+        options.push(...shuffle(manualTraps));
+        
+        // Compléter avec variations automatiques si besoin
+        if (options.length < 4) {
+            const autoTraps = [
+                correct.replace('ant', 'ent'),
+                correct.replace('int', 'ient'),
+                correct + 'o',
+                correct.replace('ent', 'ant')
+            ].filter(t => t !== correct && !options.includes(t));
+            options.push(...autoTraps);
+        }
+        
+        return shuffle(options.slice(0, 4));
+    }
+    
+    if (tense === 'periphrastic') {
+        const correct = v.periphrastic[idx];
+        const traps = ['vais', 'vaijo', 'vago', 'vais a'];
+        return shuffle([correct, ...traps.slice(0, 3)]);
+    }
+
+    // Conjugaisons normales
+    const correct = v[tense][idx];
+    const options = [correct];
+    
+    // 1. Pièges manuels (priorité)
+    const manualTraps = TRAPS_DB[v.ca]?.[tense]?.[idx] || [];
+    manualTraps.forEach(trap => {
+        if (!options.includes(trap)) {
+            options.push(trap);
+        }
+    });
+    
+    // 2. Autres personnes du même verbe (si besoin)
+    if (options.length < 4) {
+        const otherPersons = v[tense]
+            .filter((form, i) => i !== idx && !options.includes(form));
+        shuffle(otherPersons).forEach(form => {
+            if (options.length < 4 && !options.includes(form)) {
+                options.push(form);
+            }
+        });
+    }
+    
+    // 3. Formes d'autres verbes similaires (si vraiment besoin)
+    if (options.length < 4) {
+        const similarVerbs = VERBS_DB.filter(vb => 
+            vb.ca !== v.ca && 
+            vb[tense] && 
+            vb[tense][idx] !== correct &&
+            !options.includes(vb[tense][idx])
+        );
+        shuffle(similarVerbs).forEach(vb => {
+            if (options.length < 4 && !options.includes(vb[tense][idx])) {
+                options.push(vb[tense][idx]);
+            }
+        });
+    }
+    
+    // S'assurer qu'on a exactement 4 options
+    return shuffle(options.slice(0, 4));
 }
 
-function genConjOpts(v,idx,tense){
-    if(tense==='gerund'){
-        const correct=v.gerund;
-        const traps=createTraps(correct,[correct]);
-        return[correct,...traps.slice(0,3)].sort(()=>Math.random()-0.5);
-    }
-    if(tense==='periphrastic'){
-        const correct=v.periphrastic[idx];
-        const traps=['vais','vaijo','vago','vais a'];
-        return[correct,...traps.sort(()=>Math.random()-0.5).slice(0,3)].sort(()=>Math.random()-0.5);
-    }
-    const correct=v[tense][idx];
-    const allForms=v[tense];
-    const opts=[correct];
-    const others=allForms.filter((_,i)=>i!==idx);
-    const traps=createTraps(correct,allForms);
-    const pool=[...others,...traps];
-    return[correct,...pool.sort(()=>Math.random()-0.5).slice(0,3)].sort(()=>Math.random()-0.5);
+function shuffle(array) {
+    return [...array].sort(() => Math.random() - 0.5);
 }
 
-// Dans ton objet state initial, ajoute :
-// state.pool = null; 
+
 
 function startQ() {
     const active = Object.keys(state.tenses).filter(k => state.tenses[k]);
@@ -380,8 +897,8 @@ function renderStats() {
             }
         });
 
-        totalCorrect += verbCorrect;
-        totalPossible += verbTotal;
+        totalCorrect += verbCorrect/2;
+        totalPossible += verbTotal/2;
         
         if (verbTotal > 0) {
             verbRankings.push({ 
