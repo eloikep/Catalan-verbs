@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Révision Catalan</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen p-4">
+    <div id="app"></div>
+    <script>
+// ==================== BASE DE DONNÉES ====================
+const VERBS_DB = [
+    {fr:'être',es:'ser',ca:'ser',present:['soc','ets','és','som','sou','són'],subjunctive:['sigui','siguis','sigui','siguem','sigueu','siguin'],future:['seré','seràs','serà','serem','sereu','seran'],imperfect:['era','eres','era','érem','éreu','eren'],gerund:'essent',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'avoir',es:'tener',ca:'tenir',present:['tinc','tens','té','tenim','teniu','tenen'],subjunctive:['tingui','tinguis','tingui','tinguem','tingueu','tinguin'],future:['tindré','tindràs','tindrà','tindrem','tindreu','tindran'],imperfect:['tenia','tenies','tenia','teníem','teníeu','tenien'],gerund:'tenint',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'aller',es:'ir',ca:'anar',present:['vaig','vas','va','anem','aneu','van'],subjunctive:['vagi','vagis','vagi','anem','aneu','vagin'],future:['aniré','aniràs','anirà','anirem','anireu','aniran'],imperfect:['anava','anaves','anava','anàvem','anàveu','anaven'],gerund:'anant',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'faire',es:'hacer',ca:'fer',present:['faig','fas','fa','fem','feu','fan'],subjunctive:['faci','facis','faci','fem','feu','facin'],future:['faré','faràs','farà','farem','fareu','faran'],imperfect:['feia','feies','feia','fèiem','fèieu','feien'],gerund:'fent',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'pouvoir',es:'poder',ca:'poder',present:['puc','pots','pot','podem','podeu','poden'],subjunctive:['pugui','puguis','pugui','puguem','pugueu','puguin'],future:['podré','podràs','podrà','podrem','podreu','podran'],imperfect:['podia','podies','podia','podíem','podíeu','podien'],gerund:'podent',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'vouloir',es:'querer',ca:'voler',present:['vull','vols','vol','volem','voleu','volen'],subjunctive:['vulgui','vulguis','vulgui','vulguem','vulgueu','vulguin'],future:['voldré','voldràs','voldrà','voldrem','voldreu','voldran'],imperfect:['volia','volies','volia','volíem','volíeu','volien'],gerund:'volent',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'dire',es:'decir',ca:'dir',present:['dic','dius','diu','diem','dieu','diuen'],subjunctive:['digui','diguis','digui','diguem','digueu','diguin'],future:['diré','diràs','dirà','direm','direu','diran'],imperfect:['deia','deies','deia','dèiem','dèieu','deien'],gerund:'dient',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'venir',es:'venir',ca:'venir',present:['vinc','véns','vé','venim','veniu','vénen'],subjunctive:['vingui','vinguis','vingui','vinguem','vingueu','vinguin'],future:['vindré','vindràs','vindrà','vindrem','vindreu','vindran'],imperfect:['venia','venies','venia','veníem','veníeu','venien'],gerund:'venint',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'savoir',es:'saber',ca:'saber',present:['sé','saps','sap','sabem','sabeu','saben'],subjunctive:['sàpiga','sàpigues','sàpiga','sapiguem','sapigueu','sàpiguen'],future:['sabré','sabràs','sabrà','sabrem','sabreu','sabran'],imperfect:['sabia','sabies','sabia','sabíem','sabíeu','sabien'],gerund:'sabent',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'voir',es:'ver',ca:'veure',present:['veig','veus','veu','veiem','veieu','veuen'],subjunctive:['vegi','vegis','vegi','vegem','vegeu','vegin'],future:['veuré','veuràs','veurà','veurem','veureu','veuran'],imperfect:['veia','veies','veia','vèiem','vèieu','veien'],gerund:'veient',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'parler',es:'hablar',ca:'parlar',present:['parlo','parles','parla','parlem','parleu','parlen'],subjunctive:['parli','parlis','parli','parlem','parleu','parlin'],future:['parlaré','parlaràs','parlarà','parlarem','parlareu','parlaran'],imperfect:['parlava','parlaves','parlava','parlàvem','parlàveu','parlaven'],gerund:'parlant',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'vivre',es:'vivir',ca:'viure',present:['visc','vius','viu','vivim','viviu','viuen'],subjunctive:['visqui','visquis','visqui','visquem','visqueu','visquin'],future:['viuré','viuràs','viurà','viurem','viureu','viuran'],imperfect:['vivia','vivies','vivia','vivíem','vivíeu','vivien'],gerund:'vivint',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'écrire',es:'escribir',ca:'escriure',present:['escric','escrius','escriu','escrivim','escriviu','escriuen'],subjunctive:['escrigui','escriguis','escrigui','escriguem','escrigueu','escriguin'],future:['escriuré','escriuràs','escriurà','escriurem','escriureu','escriuran'],imperfect:['escrivia','escrivies','escrivia','escrivíem','escrivíeu','escrivien'],gerund:'escrivint',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'servir',es:'servir',ca:'servir',present:['serveixo','serveixes','serveix','servim','serviu','serveixen'],subjunctive:['serveixi','serveixis','serveixi','servim','serviu','serveixin'],future:['serviré','serviràs','servirà','servirem','servireu','serviran'],imperfect:['servia','servies','servia','servíem','servíeu','servien'],gerund:'servint',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'lire',es:'leer',ca:'llegir',present:['llegeixo','llegeixes','llegeix','llegim','llegiu','llegeixen'],subjunctive:['llegeixi','llegeixis','llegeixi','llegim','llegiu','llegeixin'],future:['llegiré','llegiràs','llegirà','llegirem','llegireu','llegiran'],imperfect:['llegia','llegies','llegia','llegíem','llegíeu','llegien'],gerund:'llegint',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'manger',es:'comer',ca:'menjar',present:['menjo','menges','menja','mengem','mengeu','mengen'],subjunctive:['mengi','mengis','mengi','mengem','mengeu','mengin'],future:['menjaré','menjaràs','menjarà','menjarem','menjareu','menjaran'],imperfect:['menjava','menjaves','menjava','menjàvem','menjàveu','menjaven'],gerund:'menjant',periphrastic:['vaig','vas','va','vam','vau','van']}
+];
+
+const PRONOUNS = [
+    {ca:'jo',fr:'je',es:'yo',i:0},
+    {ca:'tu',fr:'tu',es:'tú',i:1},
+    {ca:'ell/ella',fr:'il/elle',es:'él/ella',i:2},
+    {ca:'nosaltres',fr:'nous',es:'nosotros/as',i:3},
+    {ca:'vosaltres',fr:'vous',es:'vosotros/as',i:4},
+    {ca:'ells/elles',fr:'ils/elles',es:'ellos/ellas',i:5}
+];
+
+const TRANSLATIONS = {
+    fr: {
+        title: 'Révision Catalan',
+        menu: {
+            title: 'Menu Principal',
+            verbs: 'Verbes',
+            selectTenses: 'Sélectionner les temps',
+            start: 'Commencer',
+            vocab: 'Vocabulaire',
+            soon: '(Bientôt)',
+            changeLang: 'Changer de langue'
+        },
+        tenses: {
+            present: 'Présent',
+            subjunctive: 'Subjonctif',
+            future: 'Futur',
+            imperfect: 'Imparfait',
+            gerund: 'Gérondif',
+            periphrastic: 'Passé périphrastique'
+        },
+        game: {
+            back: '← Menu',
+            step1: 'Étape 1: Traduction',
+            step2: 'Étape 2: Conjugaison',
+            verb: 'Verbe',
+            q1: 'Quelle est la traduction en catalan ?',
+            q2: 'au',
+            full: 'Conjugaison complète de',
+            next: 'Question suivante',
+            ok: 'OK, continuer',
+	    reviewMode: "Mode Révision : Correction des erreurs"
+        },
+        stats: {
+            title: 'Récapitulatif',
+            questions: 'questions',
+            translation: 'Traduction',
+            continue: 'Continuer',
+            menu: 'Menu',
+            // Nouveaux champs pour renderStats
+            detailTitle: 'Détail par verbe',
+            congrats: 'Félicitations ! Tes 10 derniers verbes sont parfaits. ✨',
+            focus: "Points d'attention (2 pires verbes) :",
+	    retryButton: "Réviser les erreurs"
+        }
+    },
+    es: {
+        title: 'Repaso Catalán',
+        menu: {
+            title: 'Menú Principal',
+            verbs: 'Verbos',
+            selectTenses: 'Seleccionar tiempos',
+            start: 'Comenzar',
+            vocab: 'Vocabulario',
+            soon: '(Próximamente)',
+            changeLang: 'Cambiar idioma'
+        },
+        tenses: {
+            present: 'Presente',
+            subjunctive: 'Subjuntivo',
+            future: 'Futuro',
+            imperfect: 'Imperfecto',
+            gerund: 'Gerundio',
+            periphrastic: 'Pasado perifrástico'
+        },
+        game: {
+            back: '← Menú',
+            step1: 'Paso 1: Traducción',
+            step2: 'Paso 2: Conjugación',
+            verb: 'Verbo',
+            q1: '¿Cuál es la traducción al catalán?',
+            q2: 'en',
+            full: 'Conjugación completa de',
+            next: 'Siguiente pregunta',
+            ok: 'OK, continuar',
+	    reviewMode: "Modo Revisión: Corrección de errores"
+        },
+        stats: {
+            title: 'Resumen',
+            questions: 'preguntas',
+            translation: 'Traducción',
+            continue: 'Continuar',
+            menu: 'Menú',
+            // Nouveaux champs pour renderStats
+            detailTitle: 'Detalle por verbo',
+            congrats: '¡Felicidades! Tus últimos 10 verbos son perfectos. ✨',
+            focus: 'Puntos de atención (2 peores verbos):',
+	    retryButton: "Repasar errores"
+        }
+    }
+};
+// ==================== ÉTAT GLOBAL ====================
+let state = {
+    screen:'language',lang:null,stage:'translation',verb:null,pron:null,opts:[],sel:null,show:false,
+    score:0,total:0,qCount:0,tenses:{present:true,subjunctive:false,future:false,imperfect:false,periphrastic:false},tense:null,verbStats:{},pool:null
+};
+
+// ==================== FONCTIONS PRINCIPALES ====================
+function selectLanguage(l){state.lang=l;state.screen='menu';render();}
+function goToMenu() {
+    state.pool = null; // Important pour ne pas rester bloqué en mode révision
+    state.screen = 'menu';
+    render();
+}
+function goToLanguage(){state={screen:'language',lang:null,stage:'translation',verb:null,pron:null,opts:[],sel:null,show:false,score:0,total:0,qCount:0,tenses:{present:true,subjunctive:false,future:false,imperfect:false,periphrastic:false},tense:null,verbStats:{}};render();}
+function toggleTense(t){state.tenses[t]=!state.tenses[t];render();}
+
+function startVerbs(){
+    const has=Object.values(state.tenses).some(x=>x);
+    if(!has){alert(state.lang==='fr'?'Sélectionnez au moins un temps':'Seleccione al menos un tiempo');return;}
+    state.screen='verbs';state.score=0;state.total=0;state.qCount=0;state.verbStats={};
+    startQ();
+}
+
+function initStats(ca) {
+    if (!state.verbStats[ca]) {
+        state.verbStats[ca] = { 
+            translation: { ok: 0, total: 0 } 
+        };
+        Object.keys(state.tenses).forEach(t => {
+            // On crée un tableau de 6 objets (un par personne)
+            state.verbStats[ca][t] = Array.from({ length: 6 }, () => ({ ok: 0, total: 0 }));
+        });
+    }
+}
+
+function genTrOpts(v){
+    const d=VERBS_DB.filter(x=>x.ca!==v.ca).sort(()=>Math.random()-0.5).slice(0,3).map(x=>x.ca);
+    return[v.ca,...d].sort(()=>Math.random()-0.5);
+}
+
+function createTraps(correct,allForms){
+    const t=[];
+    if(correct.includes('eix')){t.push(correct.replace('eix','ix'),correct.replace('eix','ieix'));}
+    if(correct.includes('iu')){t.push(correct.replace('iu','ieu'),correct.replace('iu','iueu'));}
+    if(correct.includes('visc')){t.push('visco','viscu');}
+    if(correct.endsWith('c')&&!correct.includes('esc'))t.push(correct+'o');
+    if(correct.includes('prenc')){t.push('prend','preno');}
+    if(correct.includes('serv'))t.push(correct.replace('eix','is'));
+    return t.filter(x=>!allForms.includes(x));
+}
+
+function genConjOpts(v,idx,tense){
+    if(tense==='gerund'){
+        const correct=v.gerund;
+        const traps=createTraps(correct,[correct]);
+        return[correct,...traps.slice(0,3)].sort(()=>Math.random()-0.5);
+    }
+    if(tense==='periphrastic'){
+        const correct=v.periphrastic[idx];
+        const traps=['vais','vaijo','vago','vais a'];
+        return[correct,...traps.sort(()=>Math.random()-0.5).slice(0,3)].sort(()=>Math.random()-0.5);
+    }
+    const correct=v[tense][idx];
+    const allForms=v[tense];
+    const opts=[correct];
+    const others=allForms.filter((_,i)=>i!==idx);
+    const traps=createTraps(correct,allForms);
+    const pool=[...others,...traps];
+    return[correct,...pool.sort(()=>Math.random()-0.5).slice(0,3)].sort(()=>Math.random()-0.5);
+}
+
+// Dans ton objet state initial, ajoute :
+// state.pool = null; 
+
+function startQ() {
+    const active = Object.keys(state.tenses).filter(k => state.tenses[k]);
+    const tense = active[Math.floor(Math.random() * active.length)];
+    const pron = PRONOUNS[Math.floor(Math.random() * PRONOUNS.length)];
+
+    // LOGIQUE DE SÉLECTION : Si state.pool existe, on pioche dedans, sinon dans VERBS_DB
+    const source = state.pool || VERBS_DB;
+    const verb = source[Math.floor(Math.random() * source.length)];
+
+    initStats(verb.ca);
+    state.verb = verb; 
+    state.pron = pron; 
+    state.tense = tense; 
+    state.stage = 'translation';
+    state.opts = genTrOpts(verb); 
+    state.sel = null; 
+    state.show = false;
+    render();
+}
+
+function handleAns(ans) {
+    state.sel = ans;
+    state.show = true;
+
+    if (state.stage === 'translation') {
+        const isCorrect = ans === state.verb.ca;
+        
+        // Mise à jour du compteur de traduction
+        state.verbStats[state.verb.ca].translation.total++;
+        if (isCorrect) {
+            state.verbStats[state.verb.ca].translation.ok++;
+            state.score += 0.5;
+        }
+        
+        state.total++;
+        if (isCorrect) {
+            state.stage = 'conjugation';
+            state.opts = genConjOpts(state.verb, state.pron.i, state.tense);
+            state.sel = null;
+            state.show = false;
+        }
+        render();
+    } else {
+        const correct = state.verb[state.tense][state.pron.i];
+        const isCorrect = ans === correct;
+
+        // Mise à jour du compteur de conjugaison (temps + personne)
+        const stat = state.verbStats[state.verb.ca][state.tense][state.pron.i];
+        stat.total++;
+        if (isCorrect) {
+            stat.ok++;
+            state.score += 0.5;
+        }
+
+        state.qCount++;
+        render();
+    }
+}
+
+function next(){
+    if(state.stage === 'translation'){
+        // On passe à la conjugaison du même verbe
+        state.stage = 'conjugation';
+        state.opts = genConjOpts(state.verb, state.pron.i, state.tense);
+        state.sel = null;
+        state.show = false;
+        render();
+    } else {
+        // On a fini la paire, on vérifie si on doit afficher les stats ou le verbe suivant
+        if(state.qCount > 0 && state.qCount % 10 === 0){
+            state.screen = 'stats';
+            render();
+        } else {
+            startQ();
+        }
+    }
+}
+
+function retryErrors() {
+	const verbsWithErrors = Object.keys(state.verbStats).filter(ca => {
+        const s = state.verbStats[ca];
+        const hasTrErr = s.translation.total > 0 && s.translation.ok < s.translation.total;
+        const hasConjErr = Object.keys(state.tenses).some(t => 
+            s[t] && s[t].some(st => st.total > 0 && st.ok < st.total)
+        );
+        return hasTrErr || hasConjErr;
+    });
+
+    if (verbsWithErrors.length === 0) return;
+
+    // On prépare le pool d'erreurs
+    state.pool = VERBS_DB.filter(v => verbsWithErrors.includes(v.ca));
+    
+    // On réinitialise seulement le compteur de la série, pas le score global
+    state.qCount = 0;
+    state.screen = 'game';
+    startQ();
+}
+
+function continueStats() {
+    state.pool = null; // On repasse en mode normal (pioche dans tout VERBS_DB)
+    state.qCount = 0;
+    state.screen = 'game';
+    startQ();
+}
+
+
+
+// ==================== RENDU ====================
+function renderLang(){
+    return`<div class="max-w-md mx-auto mt-20"><div class="bg-white rounded-lg shadow-xl p-8 text-center">
+    <h1 class="text-4xl font-bold text-indigo-900 mb-8">🇪🇸 Català 🇫🇷</h1>
+    <p class="text-gray-600 mb-8">Choisissez votre langue / Elige tu idioma</p>
+    <div class="space-y-4">
+    <button onclick="selectLanguage('fr')" class="w-full bg-indigo-600 text-white py-4 rounded-lg font-bold text-xl hover:bg-indigo-700">🇫🇷 Français</button>
+    <button onclick="selectLanguage('es')" class="w-full bg-red-600 text-white py-4 rounded-lg font-bold text-xl hover:bg-red-700">🇪🇸 Español</button>
+    </div></div></div>`;
+}
+
+function renderMenu(){
+    const t=TRANSLATIONS[state.lang].menu;
+    const tn=TRANSLATIONS[state.lang].tenses;
+    return`<div class="max-w-md mx-auto mt-10"><div class="bg-white rounded-lg shadow-xl p-8">
+    <h1 class="text-3xl font-bold text-indigo-900 mb-6 text-center">${t.title}</h1>
+    <div class="bg-blue-50 p-4 rounded-lg mb-6">
+    <h2 class="font-bold text-blue-900 mb-3">${t.selectTenses}</h2>
+    <div class="space-y-2">
+    ${Object.keys(state.tenses).map(k=>`<label class="flex items-center gap-2 cursor-pointer">
+    <input type="checkbox" ${state.tenses[k]?'checked':''} onchange="toggleTense('${k}')" class="w-4 h-4">
+    <span>${tn[k]}</span></label>`).join('')}
+    </div></div>
+    <button onclick="startVerbs()" class="w-full bg-indigo-600 text-white py-4 rounded-lg font-bold text-xl hover:bg-indigo-700 mb-4">${t.start}</button>
+    <button disabled class="w-full bg-gray-300 text-gray-500 py-4 rounded-lg font-bold mb-4 cursor-not-allowed">${t.vocab} ${t.soon}</button>
+    <button onclick="goToLanguage()" class="w-full bg-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-300">🌐 ${t.changeLang}</button>
+    </div></div>`;
+}
+
+function renderStats() {
+    const lang = state.lang;
+    const t = TRANSLATIONS[lang].stats;
+    const tn = TRANSLATIONS[lang].tenses;
+    const list = Object.keys(state.verbStats);
+
+    // --- 1. CALCULS DES SCORES & RANKINGS ---
+    let totalCorrect = 0;
+    let totalPossible = 0;
+    const scoresByTense = { translation: { ok: 0, total: 0 } };
+    const verbRankings = [];
+
+    list.forEach(ca => {
+        const s = state.verbStats[ca];
+        const v = VERBS_DB.find(x => x.ca === ca);
+        let verbCorrect = 0;
+        let verbTotal = 0;
+
+        // Traduction
+        if (s.translation.total > 0) {
+            scoresByTense.translation.ok += s.translation.ok;
+            scoresByTense.translation.total += s.translation.total;
+            verbCorrect += s.translation.ok;
+            verbTotal += s.translation.total;
+        }
+
+        // Conjugaisons
+        Object.keys(state.tenses).forEach(tense => {
+            if (state.tenses[tense] && s[tense]) {
+                if (!scoresByTense[tense]) scoresByTense[tense] = { ok: 0, total: 0 };
+                s[tense].forEach(stat => {
+                    if (stat.total > 0) {
+                        scoresByTense[tense].ok += stat.ok;
+                        scoresByTense[tense].total += stat.total;
+                        verbCorrect += stat.ok;
+                        verbTotal += stat.total;
+                    }
+                });
+            }
+        });
+
+        totalCorrect += verbCorrect;
+        totalPossible += verbTotal;
+        
+        if (verbTotal > 0) {
+            verbRankings.push({ 
+                ca: ca, 
+                display: v.ca.toUpperCase(),
+                ratio: verbCorrect / verbTotal
+            });
+        }
+    });
+
+    // --- LOGIQUE DES 10 DERNIERS & PIRES VERBES ---
+    // Les 10 derniers verbes testés
+    const last10Entries = verbRankings.slice(-10);
+    const perfectLast10 = last10Entries.length > 0 && last10Entries.every(v => v.ratio === 1);
+    
+    // Les 2 pires sur toute la session (uniquement ceux qui ont des erreurs)
+    const worstVerbs = [...verbRankings]
+        .filter(v => v.ratio < 1)
+        .sort((a, b) => a.ratio - b.ratio)
+        .slice(0, 2);
+   
+    // On ajoute les boutons d'erreurs	
+    const hasGlobalErrors = list.some(ca => {
+    const s = state.verbStats[ca];
+    const trErr = s.translation.ok < s.translation.total;
+    const conjErr = Object.keys(state.tenses).some(t => 
+        s[t] && s[t].some(st => st.total > 0 && st.ok < st.total)
+    );
+    return trErr || conjErr;
+});
+
+
+    // --- 2. RENDU HTML ---
+return `
+<div class="max-w-4xl mx-auto relative">
+    <div class="absolute -top-2 right-4 bg-indigo-600 text-white px-6 py-3 rounded-2xl shadow-lg z-10 font-black text-xl">
+        ${totalCorrect / 2} / ${totalPossible / 2}
+    </div>
+
+    <div class="bg-white rounded-lg shadow-xl p-8 pt-12">
+        <h1 class="text-3xl font-bold text-indigo-900 mb-6 text-center">${t.title}</h1>
+        
+        <div class="flex flex-wrap gap-4 mb-8">
+            <button onclick="goToMenu()" class="flex-1 min-w-[120px] bg-gray-100 text-gray-700 py-3 rounded-lg font-bold hover:bg-gray-200 transition">
+                ${t.menu}
+            </button>
+
+            ${hasGlobalErrors ? `
+                <button onclick="retryErrors()" class="flex-1 min-w-[120px] bg-orange-500 text-white py-3 rounded-lg font-bold hover:bg-orange-600 transition shadow-md">
+                    ${t.retryButton}
+                </button>
+            ` : ''}
+
+            <button onclick="continueStats()" class="flex-1 min-w-[120px] bg-indigo-600 text-white py-3 rounded-lg font-bold hover:bg-indigo-700 transition shadow-md">
+                ${t.continue}
+            </button>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+            <div class="bg-amber-50 p-3 rounded-xl border border-amber-100 text-center">
+                <div class="text-[10px] font-black text-amber-400 uppercase tracking-widest">${t.translation}</div>
+                <div class="text-lg font-bold text-amber-900">${scoresByTense.translation.ok}/${scoresByTense.translation.total}</div>
+            </div>
+            ${Object.keys(scoresByTense).filter(k => k !== 'translation').map(tense => `
+                <div class="bg-indigo-50 p-3 rounded-xl border border-indigo-100 text-center">
+                    <div class="text-[10px] font-black text-indigo-400 uppercase tracking-widest">${tn[tense]}</div>
+                    <div class="text-lg font-bold text-indigo-900">${scoresByTense[tense].ok}/${scoresByTense[tense].total}</div>
+                </div>
+            `).join('')}
+        </div>
+
+        <div class="mb-10 p-5 rounded-2xl border-2 ${perfectLast10 ? 'bg-green-50 border-green-200' : 'bg-orange-50 border-orange-200'}">
+            ${perfectLast10 
+                ? `<p class="text-green-800 font-bold text-center">🌟 ${t.congrats}</p>`
+                : `<div>
+                    <p class="text-orange-900 font-bold mb-2 uppercase text-xs tracking-wider">${t.focus}</p>
+                    <div class="flex gap-2">
+                        ${worstVerbs.length > 0 
+                            ? worstVerbs.map(v => `<span class="bg-orange-600 text-white px-3 py-1 rounded-lg font-black shadow-sm">${v.display}</span>`).join('')
+                            : `<span class="text-orange-800 italic text-sm">Pas assez de données pour le moment.</span>`
+                        }
+                    </div>
+                   </div>`
+            }
+        </div>
+
+        <h2 class="text-xl font-black text-gray-300 mb-6 flex items-center gap-4 uppercase">
+            <span class="flex-grow h-px bg-gray-100"></span> ${t.detailTitle} <span class="flex-grow h-px bg-gray-100"></span>
+        </h2>
+
+        <div class="space-y-4">
+            ${list.map(ca => {
+                const v = VERBS_DB.find(x => x.ca === ca);
+                const s = state.verbStats[ca];
+                
+                if (s.translation.total === 0) return '';
+
+                const trRatio = s.translation.ok / s.translation.total;
+                const trColor = trRatio === 1 ? 'bg-green-500' : (trRatio === 0 ? 'bg-red-500' : 'bg-orange-500');
+
+                return `
+                <div class="bg-white border border-gray-100 rounded-xl p-4 shadow-sm hover:border-indigo-100 transition">
+                    <div class="flex justify-between items-center mb-4">
+                        <div>
+                            <h3 class="text-lg font-black text-indigo-900 uppercase">${v.ca}</h3>
+                            <p class="text-xs text-gray-400 italic">${v[lang]}</p>
+                        </div>
+                        <div class="px-3 py-1 rounded-md ${trColor} text-white text-[10px] font-black shadow-sm">
+                            ${t.translation.toUpperCase()}: ${s.translation.ok}/${s.translation.total}
+                        </div>
+                    </div>
+
+                    ${Object.keys(state.tenses).filter(k => state.tenses[k] && s[k]).map(tense => {
+                        const hasTenseData = s[tense].some(stat => stat.total > 0);
+                        if (!hasTenseData) return '';
+
+                        return `
+                        <div class="mt-3 bg-gray-50 p-3 rounded-lg">
+                            <h4 class="text-[9px] font-black text-gray-400 uppercase mb-2 tracking-widest">${tn[tense]}</h4>
+                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                                ${PRONOUNS.map((p, i) => {
+                                    const stat = s[tense][i];
+                                    if (stat.total === 0) return ''; 
+
+                                    const ratio = stat.ok / stat.total;
+                                    const dotColor = ratio === 1 ? 'bg-green-500' : (ratio === 0 ? 'bg-red-500' : 'bg-orange-500');
+                                    
+                                    return `
+                                        <div class="flex items-center gap-2 p-2 rounded-lg bg-white border border-gray-100 shadow-sm">
+                                            <div class="w-2 h-2 rounded-full ${dotColor}"></div>
+                                            <div class="flex flex-col">
+                                                <span class="text-[8px] font-bold text-gray-400 uppercase">${p.ca}</span>
+                                                <span class="text-[10px] font-black text-indigo-900">${v[tense][i]}</span>
+                                            </div>
+                                            <span class="ml-auto text-[9px] font-bold text-gray-300">${stat.ok}/${stat.total}</span>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>`;
+                    }).join('')}
+                </div>`;
+            }).join('')}
+        </div>
+    </div>
+</div>`;
+}
+
+
+function renderGame(){
+    if(!state.verb||!state.pron)return'';
+    const t=TRANSLATIONS[state.lang].game;
+    const tn=TRANSLATIONS[state.lang].tenses;
+    const correctAns=state.stage==='translation'?state.verb.ca:state.verb[state.tense][state.pron.i];
+    const isCorrect=state.sel===correctAns;
+    const vName=state.verb[state.lang];
+    
+    return`<div class="max-w-2xl mx-auto"><div class="bg-white rounded-lg shadow-xl p-8">
+    <div class="flex justify-between items-center mb-6">
+    <button onclick="goToMenu()" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300">${t.back}</button>
+    <div class="flex gap-2">
+    <div class="bg-purple-100 px-3 py-2 rounded-lg text-sm font-medium">${state.qCount}</div>
+    <div class="bg-indigo-100 px-3 py-2 rounded-lg font-bold">🏆 ${state.score}/${state.total}</div>
+    </div></div>
+    <div class="mb-6">
+    <div class="flex gap-2 mb-4">
+    <div class="flex-1 h-2 rounded ${state.stage==='translation'?'bg-indigo-500':'bg-green-500'}"></div>
+    <div class="flex-1 h-2 rounded ${state.stage==='conjugation'?'bg-indigo-500':'bg-gray-300'}"></div>
+    </div>
+    <p class="text-sm text-gray-600">${state.stage==='translation'?t.step1:t.step2}</p>
+    </div>
+    ${state.stage==='translation'?`<div class="mb-6">
+<h2 class="text-2xl font-bold text-center mb-4">${t.verb}: <span class="text-indigo-600">${vName}</span></h2>
+<p class="text-gray-600 text-center">${t.q1}</p></div>`:`<div class="mb-6">
+<h2 class="text-2xl font-bold text-indigo-600 text-center mb-4">${
+    state.tense==='gerund'?`Estic _____ (${state.verb.ca})`:
+    state.tense==='periphrastic'?`${state.pron.ca} _____ ${state.verb.ca}`:
+    `${state.pron.ca} _____ (${state.verb.ca}) ${t.q2} ${tn[state.tense]}`
+}</h2></div>`}
+    <div class="space-y-3">
+    ${state.opts.map(o=>`<button onclick="handleAns('${o.replace(/'/g,"\\'")}')" ${state.show?'disabled':''} 
+    class="w-full p-4 rounded-lg text-lg font-medium transition ${state.show?o===correctAns?'bg-green-500 text-white':o===state.sel?'bg-red-500 text-white':'bg-gray-100 text-gray-400':'bg-indigo-50 text-indigo-900 hover:bg-indigo-100'}">
+    <div class="flex justify-between items-center"><span>${o}</span>
+    ${state.show&&o===correctAns?'<span class="text-2xl">✓</span>':state.show&&o===state.sel&&o!==correctAns?'<span class="text-2xl">✗</span>':''}
+    </div></button>`).join('')}
+    </div>
+    ${state.show&&state.stage==='conjugation'&&!isCorrect?`<div class="mt-4 bg-blue-50 p-4 rounded-lg">
+    <h3 class="font-bold text-blue-900 mb-2">${t.full} "${state.verb.ca}" ${t.q2} ${tn[state.tense]}:</h3>
+    <div class="grid grid-cols-2 gap-2 text-sm">
+    ${PRONOUNS.map((p,i)=>`<div class="text-blue-800"><span class="font-medium">${p.ca}:</span> ${state.verb[state.tense][i]}</div>`).join('')}
+    </div></div>`:''} 
+    ${state.show?`<button onclick="next()" class="w-full mt-4 bg-indigo-600 text-white py-3 rounded-lg font-bold hover:bg-indigo-700">
+    ${state.stage==='conjugation'||!isCorrect?t.next:t.ok}</button>`:''}
+    </div></div>`;
+}
+
+function render(){
+    const screens={language:renderLang,menu:renderMenu,verbs:renderGame,stats:renderStats};
+    document.getElementById('app').innerHTML=screens[state.screen]();
+}
+
+render();
+    </script>
+</body>
+</html>
