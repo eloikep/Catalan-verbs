@@ -138,28 +138,48 @@ function handleAns(ans){
     if(state.stage==='translation'){
         const ok=ans===state.verb.ca;
         state.verbStats[state.verb.ca].translation=ok;
-        if(!ok)state.total++;
-        render();
+	// Système de points : +0.5 si juste et +0.5 pour le total
+        if(ok) state.score += 0.5;
+        state.total++;
         if(ok){
             state.stage='conjugation';
             state.opts=genConjOpts(state.verb,state.pron.i,state.tense);
             state.sel=null;state.show=false;
             render();
         }
+	// SI FAUX : On ne fait rien d'autre. 
+        // render() est appelé à la fin, donc l'erreur s'affiche et le bouton "next" apparaît.
+	render();
     }else{
+	// Logique de conjugaison
         const correct=state.verb[state.tense][state.pron.i];
         const ok=ans===correct;
         state.verbStats[state.verb.ca][state.tense][state.pron.i]=ok;
-        if(ok)state.score++;
-        state.total++;state.qCount++;
+        if(ok)state.score+=0.5;
+        state.qCount++;
         render();
     }
 }
 
 function next(){
-    if(state.qCount>0&&state.qCount%10===0){state.screen='stats';render();}
-    else startQ();
+    if(state.stage === 'translation'){
+        // On passe à la conjugaison du même verbe
+        state.stage = 'conjugation';
+        state.opts = genConjOpts(state.verb, state.pron.i, state.tense);
+        state.sel = null;
+        state.show = false;
+        render();
+    } else {
+        // On a fini la paire, on vérifie si on doit afficher les stats ou le verbe suivant
+        if(state.qCount > 0 && state.qCount % 10 === 0){
+            state.screen = 'stats';
+            render();
+        } else {
+            startQ();
+        }
+    }
 }
+
 
 function continueStats(){state.screen='verbs';startQ();}
 
