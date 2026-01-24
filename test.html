@@ -80,7 +80,7 @@ const TRANSLATIONS = {
             detailTitle: 'Détail par verbe',
             congrats: 'Félicitations ! Tes 10 derniers verbes sont parfaits. ✨',
             focus: "Points d'attention (2 pires verbes) :",
-	    retryButton: "Réviser les erreurs"
+	    retryButton: "Revoir les verbes problématiques"
         }
     },
     es: {
@@ -124,7 +124,7 @@ const TRANSLATIONS = {
             detailTitle: 'Detalle por verbo',
             congrats: '¡Felicidades! Tus últimos 10 verbos son perfectos. ✨',
             focus: 'Puntos de atención (2 peores verbos):',
-	    retryButton: "Repasar errores"
+	    retryButton: "Repasar verbos con errores"
         }
     }
 };
@@ -297,14 +297,14 @@ function retryErrors() {
     
     // On réinitialise seulement le compteur de la série, pas le score global
     state.qCount = 0;
-    state.screen = 'game';
+    state.screen = 'verbs';
     startQ();
 }
 
 function continueStats() {
     state.pool = null; // On repasse en mode normal (pioche dans tout VERBS_DB)
     state.qCount = 0;
-    state.screen = 'game';
+    state.screen = 'verbs';
     startQ();
 }
 
@@ -418,7 +418,7 @@ function renderStats() {
 return `
 <div class="max-w-4xl mx-auto relative">
     <div class="absolute -top-2 right-4 bg-indigo-600 text-white px-6 py-3 rounded-2xl shadow-lg z-10 font-black text-xl">
-        ${totalCorrect / 2} / ${totalPossible / 2}
+        ${totalCorrect} / ${totalPossible}
     </div>
 
     <div class="bg-white rounded-lg shadow-xl p-8 pt-12">
@@ -428,13 +428,11 @@ return `
             <button onclick="goToMenu()" class="flex-1 min-w-[120px] bg-gray-100 text-gray-700 py-3 rounded-lg font-bold hover:bg-gray-200 transition">
                 ${t.menu}
             </button>
-
             ${hasGlobalErrors ? `
                 <button onclick="retryErrors()" class="flex-1 min-w-[120px] bg-orange-500 text-white py-3 rounded-lg font-bold hover:bg-orange-600 transition shadow-md">
                     ${t.retryButton}
                 </button>
             ` : ''}
-
             <button onclick="continueStats()" class="flex-1 min-w-[120px] bg-indigo-600 text-white py-3 rounded-lg font-bold hover:bg-indigo-700 transition shadow-md">
                 ${t.continue}
             </button>
@@ -461,7 +459,7 @@ return `
                     <div class="flex gap-2">
                         ${worstVerbs.length > 0 
                             ? worstVerbs.map(v => `<span class="bg-orange-600 text-white px-3 py-1 rounded-lg font-black shadow-sm">${v.display}</span>`).join('')
-                            : `<span class="text-orange-800 italic text-sm">Pas assez de données pour le moment.</span>`
+                            : `<span class="text-orange-800 italic text-sm">Pas assez de données.</span>`
                         }
                     </div>
                    </div>`
@@ -472,51 +470,71 @@ return `
             <span class="flex-grow h-px bg-gray-100"></span> ${t.detailTitle} <span class="flex-grow h-px bg-gray-100"></span>
         </h2>
 
-        <div class="space-y-4">
+        <div class="space-y-6">
             ${list.map(ca => {
                 const v = VERBS_DB.find(x => x.ca === ca);
                 const s = state.verbStats[ca];
-                
-                if (s.translation.total === 0) return '';
+                if (!s || s.translation.total === 0) return '';
+
+                let cOk = 0, cTot = 0;
+                Object.keys(state.tenses).forEach(tense => {
+                    if (state.tenses[tense] && s[tense]) {
+                        s[tense].forEach(st => { cOk += st.ok; cTot += st.total; });
+                    }
+                });
 
                 const trRatio = s.translation.ok / s.translation.total;
                 const trColor = trRatio === 1 ? 'bg-green-500' : (trRatio === 0 ? 'bg-red-500' : 'bg-orange-500');
 
                 return `
-                <div class="bg-white border border-gray-100 rounded-xl p-4 shadow-sm hover:border-indigo-100 transition">
-                    <div class="flex justify-between items-center mb-4">
+                <div class="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
+                    <div class="flex justify-between items-start mb-6">
                         <div>
-                            <h3 class="text-lg font-black text-indigo-900 uppercase">${v.ca}</h3>
-                            <p class="text-xs text-gray-400 italic">${v[lang]}</p>
+                            <div class="flex items-center gap-3 mb-1">
+                                <h3 class="text-2xl font-black text-indigo-900 uppercase">${v.ca}</h3>
+                                ${cTot > 0 ? `<span class="bg-indigo-100 text-indigo-700 text-[10px] px-2 py-0.5 rounded-full font-bold">Conj: ${Math.round((cOk/cTot)*100)}%</span>` : ''}
+                            </div>
+                            <p class="text-gray-400 italic text-sm">${v[lang]}</p>
                         </div>
-                        <div class="px-3 py-1 rounded-md ${trColor} text-white text-[10px] font-black shadow-sm">
-                            ${t.translation.toUpperCase()}: ${s.translation.ok}/${s.translation.total}
+                        <div class="${trColor} text-white px-3 py-1 rounded-lg text-[10px] font-black shadow-sm uppercase">
+                            ${t.translation}: ${s.translation.ok}/${s.translation.total}
                         </div>
                     </div>
 
-                    ${Object.keys(state.tenses).filter(k => state.tenses[k] && s[k]).map(tense => {
+                    ${Object.keys(state.tenses).filter(tense => state.tenses[tense] && s[tense]).map(tense => {
+                        // On ne rend le bloc que si des questions ont été posées pour ce temps
                         const hasTenseData = s[tense].some(stat => stat.total > 0);
                         if (!hasTenseData) return '';
 
                         return `
-                        <div class="mt-3 bg-gray-50 p-3 rounded-lg">
-                            <h4 class="text-[9px] font-black text-gray-400 uppercase mb-2 tracking-widest">${tn[tense]}</h4>
-                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                        <div class="bg-gray-50 rounded-xl p-4 mb-4 last:mb-0">
+                            <h4 class="text-[10px] font-black text-gray-400 uppercase mb-3 tracking-widest text-center italic">${tn[tense]}</h4>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
                                 ${PRONOUNS.map((p, i) => {
                                     const stat = s[tense][i];
-                                    if (stat.total === 0) return ''; 
+                                    const hasData = stat.total > 0;
+                                    
+                                    let bgColor = 'bg-white border-white';
+                                    let textColor = 'text-indigo-900';
+                                    let dotColor = 'bg-gray-200';
 
-                                    const ratio = stat.ok / stat.total;
-                                    const dotColor = ratio === 1 ? 'bg-green-500' : (ratio === 0 ? 'bg-red-500' : 'bg-orange-500');
+                                    if (hasData) {
+                                        const ratio = stat.ok / stat.total;
+                                        if (ratio === 1) { bgColor = 'bg-green-50 border-green-100'; textColor = 'text-green-900'; dotColor = 'bg-green-500'; }
+                                        else if (ratio === 0) { bgColor = 'bg-red-50 border-red-100'; textColor = 'text-red-900'; dotColor = 'bg-red-500'; }
+                                        else { bgColor = 'bg-orange-50 border-orange-100'; textColor = 'text-orange-900'; dotColor = 'bg-orange-500'; }
+                                    } else {
+                                        bgColor = 'bg-gray-100/50 border-dashed border-gray-200';
+                                        textColor = 'text-gray-300';
+                                    }
                                     
                                     return `
-                                        <div class="flex items-center gap-2 p-2 rounded-lg bg-white border border-gray-100 shadow-sm">
-                                            <div class="w-2 h-2 rounded-full ${dotColor}"></div>
-                                            <div class="flex flex-col">
-                                                <span class="text-[8px] font-bold text-gray-400 uppercase">${p.ca}</span>
-                                                <span class="text-[10px] font-black text-indigo-900">${v[tense][i]}</span>
+                                        <div class="flex items-center justify-between px-3 py-2 rounded-lg border shadow-sm transition-all ${bgColor}">
+                                            <div class="flex items-center gap-2 overflow-hidden">
+                                                <div class="w-1.5 h-1.5 rounded-full shrink-0 ${dotColor}"></div>
+                                                <span class="text-sm font-bold truncate ${textColor}">${v[tense][i]}</span>
                                             </div>
-                                            <span class="ml-auto text-[9px] font-bold text-gray-300">${stat.ok}/${stat.total}</span>
+                                            ${hasData ? `<span class="text-[9px] font-black opacity-40 ml-2 ${textColor}">${stat.ok}/${stat.total}</span>` : ''}
                                         </div>
                                     `;
                                 }).join('')}
