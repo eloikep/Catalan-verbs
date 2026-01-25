@@ -8,7 +8,8 @@ const TRANSLATIONS = {
             start: 'Commencer',
             vocab: 'Vocabulaire',
             soon: '(Bientôt)',
-            changeLang: 'Changer de langue'
+            changeLang: 'Changer de langue',
+            about: 'À propos'
         },
         tenses: {
             present: 'Présent',
@@ -61,7 +62,8 @@ const TRANSLATIONS = {
             start: 'Comenzar',
             vocab: 'Vocabulario',
             soon: '(Próximamente)',
-            changeLang: 'Cambiar idioma'
+            changeLang: 'Cambiar idioma',
+            about: 'Sobre la app'
         },
         tenses: {
             present: 'Presente',
