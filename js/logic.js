@@ -5,7 +5,7 @@ const APP_CONFIG = {
 };
 
 let state = {
-    screen:'about',lang:'fr',stage:'translation',verb:null,pron:null,opts:[],sel:null,show:false,
+    screen:'language',lang:null,stage:'translation',verb:null,pron:null,opts:[],sel:null,show:false,
     score:0,total:0,qCount:0,tenses:{present:true,subjunctive:false,future:false,imperfect:false,gerund:false,periphrastic:false},tense:null,verbStats:{},pool:null
 };
 
@@ -327,12 +327,121 @@ function renderMenu(){
             <button disabled class="w-full bg-gray-300 text-gray-500 py-4 rounded-lg font-bold mb-4 cursor-not-allowed">${t.vocab} ${t.soon}</button>
             <button onclick="goToLanguage()" class="w-full bg-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-300">🌐 ${t.changeLang}</button>  
             <button onclick="state.screen='about';render()" 
-                class="w-full bg-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-300 text-sm">
-                    ℹ️ À propos
+                class="w-full mt-4 bg-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-300 text-sm">
+                    ℹ️ ${t.about}
             </button>
         </div>
     </div>`;
 }
+
+
+function renderGame(){
+    if(!state.verb||!state.pron)return'';
+    const t=TRANSLATIONS[state.lang].game;
+    const tn=TRANSLATIONS[state.lang].tenses;
+    
+    // GÉRONDIF EXCEPTION : On récupère la string directe au lieu de l'index
+    const correctAns=state.stage==='translation'
+        ? state.verb.ca 
+        : (state.tense==='gerund' ? state.verb.gerund : state.verb[state.tense][state.pron.i]);
+        
+    const isCorrect=state.sel===correctAns;
+    const vName=state.verb[state.lang];
+    
+    return`<div class="max-w-2xl mx-auto"><div class="bg-white rounded-lg shadow-xl p-8">
+    <div class="flex justify-between items-center mb-6">
+    <button onclick="goToMenu()" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300">${t.back}</button>
+    <div class="flex gap-2">
+    <div class="bg-purple-100 px-3 py-2 rounded-lg text-sm font-medium">${state.qCount}</div>
+    <div class="bg-indigo-100 px-3 py-2 rounded-lg font-bold">🏆 ${state.score}/${state.total}</div>
+    </div></div>
+    <div class="mb-6">
+    <div class="flex gap-2 mb-4">
+    <div class="flex-1 h-2 rounded ${state.stage==='translation'?'bg-indigo-500':'bg-green-500'}"></div>
+    <div class="flex-1 h-2 rounded ${state.stage==='conjugation'?'bg-indigo-500':'bg-gray-300'}"></div>
+    </div>
+    <p class="text-sm text-gray-600">${state.stage==='translation'?t.step1:t.step2}</p>
+    </div>
+    ${state.stage==='translation'?`<div class="mb-6">
+<h2 class="text-2xl font-bold text-center mb-4">${t.verb}: <span class="text-indigo-600">${vName}</span></h2>
+<p class="text-gray-600 text-center">${t.q1}</p></div>`:`<div class="mb-6">
+<h2 class="text-2xl font-bold text-indigo-600 text-center mb-4">${
+    state.tense==='gerund'?`Estic _____ (${state.verb.ca})`:
+    state.tense==='periphrastic'?`${state.pron.ca} _____ ${state.verb.ca}`:
+    `${state.pron.ca} _____ (${state.verb.ca}) ${t.q2} ${tn[state.tense]}`
+}</h2></div>`}
+    <div class="space-y-3">
+    ${state.opts.map(o=>`<button onclick="handleAns('${o.replace(/'/g,"\\'")}')" ${state.show?'disabled':''} 
+    class="w-full p-4 rounded-lg text-lg font-medium transition ${state.show?o===correctAns?'bg-green-500 text-white':o===state.sel?'bg-red-500 text-white':'bg-gray-100 text-gray-400':'bg-indigo-50 text-indigo-900 hover:bg-indigo-100'}">
+    <div class="flex justify-between items-center"><span>${o}</span>
+    ${state.show&&o===correctAns?'<span class="text-2xl">✓</span>':state.show&&o===state.sel&&o!==correctAns?'<span class="text-2xl">✗</span>':''}
+    </div></button>`).join('')}
+    </div>
+
+    ${state.show&&state.stage==='conjugation'&&!isCorrect?`<div class="mt-4 bg-blue-50 p-4 rounded-lg">
+    <h3 class="font-bold text-blue-900 mb-2 text-center uppercase text-xs tracking-widest">${t.full} "${state.verb.ca}" :</h3>
+    <div class="${state.tense==='gerund' ? 'flex justify-center' : 'grid grid-cols-2 gap-2'} text-sm">
+    ${state.tense === 'gerund' 
+        ? `<div class="text-indigo-700 text-xl font-black p-2 bg-white rounded-lg shadow-sm">${state.verb.gerund}</div>`
+        : PRONOUNS.map((p,i)=>`<div class="text-blue-800"><span class="font-medium">${p.ca}:</span> ${state.verb[state.tense][i]}</div>`).join('')
+    }
+    </div></div>`:''} 
+
+    ${state.show?`<button onclick="next()" class="w-full mt-4 bg-indigo-600 text-white py-3 rounded-lg font-bold hover:bg-indigo-700">
+    ${state.stage==='conjugation'||!isCorrect?t.next:t.ok}</button>`:''}
+    </div></div>`;
+}
+
+function renderAbout() {
+    const t = TRANSLATIONS[state.lang].about;
+    return `
+    <div class="max-w-md mx-auto mt-10 px-4 font-sans">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 border border-gray-100">
+            <h1 class="text-3xl font-black text-indigo-900 mb-2">${t.title}</h1>
+                <p class="text-xs text-gray-400 mb-2">
+                    Version ${APP_CONFIG.version} <br>
+                    Developed with ❤️ by ${APP_CONFIG.author}
+                </p>
+            
+            <div class="space-y-4 text-gray-600 mb-4 leading-relaxed">
+                <p>${t.desc}</p>
+                <p class="text-sm italic bg-gray-50 p-4 rounded-xl border-l-4 border-indigo-600">
+                    ${t.source}
+                </p>
+
+            </div>
+
+            <div class="grid grid-cols-3 gap-3 mb-2">
+                <div class="bg-indigo-600 p-4 rounded-2xl text-center shadow-lg shadow-indigo-100 transition-transform hover:scale-105">
+                    <span class="block text-2xl font-black text-white">${getStats().verbs}</span>
+                    <span class="text-[9px] uppercase font-bold text-indigo-200 tracking-tighter">${t.stat_verbs}</span>
+                </div>
+
+                <div class="bg-white border-2 border-indigo-600 p-4 rounded-2xl text-center transition-transform hover:scale-105">
+                    <span class="block text-2xl font-black text-indigo-900">${getStats().tenses}</span>
+                    <span class="text-[9px] uppercase font-bold text-indigo-400 tracking-tighter">${t.stat_tenses}</span>
+                </div>
+
+                <div class="bg-gray-50 border-2 border-dashed border-gray-200 p-4 rounded-2xl text-center opacity-60">
+                    <span class="block text-2xl font-black text-gray-400">${getStats().vocab}</span>
+                    <span class="text-[9px] uppercase font-bold text-gray-400 tracking-tighter">${t.stat_words}</span>
+                </div>
+            </div>
+
+            <button onclick="state.screen='menu';render()" 
+                class="mt-2 w-full bg-gray-100 text-gray-800 py-3 rounded-xl font-bold hover:bg-gray-200 transition-colors">
+                ${t.back}
+            </button>
+        </div>
+    </div>`;
+}
+
+
+function render(){
+    const screens={language:renderLang,menu:renderMenu,verbs:renderGame,stats:renderStats,about:renderAbout};
+    document.getElementById('app').innerHTML=screens[state.screen]();
+}
+
 
 function renderStats() {
     const lang = state.lang;
@@ -551,114 +660,6 @@ return `
         </div>
     </div>
 </div>`;
-}
-
-
-function renderGame(){
-    if(!state.verb||!state.pron)return'';
-    const t=TRANSLATIONS[state.lang].game;
-    const tn=TRANSLATIONS[state.lang].tenses;
-    
-    // GÉRONDIF EXCEPTION : On récupère la string directe au lieu de l'index
-    const correctAns=state.stage==='translation'
-        ? state.verb.ca 
-        : (state.tense==='gerund' ? state.verb.gerund : state.verb[state.tense][state.pron.i]);
-        
-    const isCorrect=state.sel===correctAns;
-    const vName=state.verb[state.lang];
-    
-    return`<div class="max-w-2xl mx-auto"><div class="bg-white rounded-lg shadow-xl p-8">
-    <div class="flex justify-between items-center mb-6">
-    <button onclick="goToMenu()" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300">${t.back}</button>
-    <div class="flex gap-2">
-    <div class="bg-purple-100 px-3 py-2 rounded-lg text-sm font-medium">${state.qCount}</div>
-    <div class="bg-indigo-100 px-3 py-2 rounded-lg font-bold">🏆 ${state.score}/${state.total}</div>
-    </div></div>
-    <div class="mb-6">
-    <div class="flex gap-2 mb-4">
-    <div class="flex-1 h-2 rounded ${state.stage==='translation'?'bg-indigo-500':'bg-green-500'}"></div>
-    <div class="flex-1 h-2 rounded ${state.stage==='conjugation'?'bg-indigo-500':'bg-gray-300'}"></div>
-    </div>
-    <p class="text-sm text-gray-600">${state.stage==='translation'?t.step1:t.step2}</p>
-    </div>
-    ${state.stage==='translation'?`<div class="mb-6">
-<h2 class="text-2xl font-bold text-center mb-4">${t.verb}: <span class="text-indigo-600">${vName}</span></h2>
-<p class="text-gray-600 text-center">${t.q1}</p></div>`:`<div class="mb-6">
-<h2 class="text-2xl font-bold text-indigo-600 text-center mb-4">${
-    state.tense==='gerund'?`Estic _____ (${state.verb.ca})`:
-    state.tense==='periphrastic'?`${state.pron.ca} _____ ${state.verb.ca}`:
-    `${state.pron.ca} _____ (${state.verb.ca}) ${t.q2} ${tn[state.tense]}`
-}</h2></div>`}
-    <div class="space-y-3">
-    ${state.opts.map(o=>`<button onclick="handleAns('${o.replace(/'/g,"\\'")}')" ${state.show?'disabled':''} 
-    class="w-full p-4 rounded-lg text-lg font-medium transition ${state.show?o===correctAns?'bg-green-500 text-white':o===state.sel?'bg-red-500 text-white':'bg-gray-100 text-gray-400':'bg-indigo-50 text-indigo-900 hover:bg-indigo-100'}">
-    <div class="flex justify-between items-center"><span>${o}</span>
-    ${state.show&&o===correctAns?'<span class="text-2xl">✓</span>':state.show&&o===state.sel&&o!==correctAns?'<span class="text-2xl">✗</span>':''}
-    </div></button>`).join('')}
-    </div>
-
-    ${state.show&&state.stage==='conjugation'&&!isCorrect?`<div class="mt-4 bg-blue-50 p-4 rounded-lg">
-    <h3 class="font-bold text-blue-900 mb-2 text-center uppercase text-xs tracking-widest">${t.full} "${state.verb.ca}" :</h3>
-    <div class="${state.tense==='gerund' ? 'flex justify-center' : 'grid grid-cols-2 gap-2'} text-sm">
-    ${state.tense === 'gerund' 
-        ? `<div class="text-indigo-700 text-xl font-black p-2 bg-white rounded-lg shadow-sm">${state.verb.gerund}</div>`
-        : PRONOUNS.map((p,i)=>`<div class="text-blue-800"><span class="font-medium">${p.ca}:</span> ${state.verb[state.tense][i]}</div>`).join('')
-    }
-    </div></div>`:''} 
-
-    ${state.show?`<button onclick="next()" class="w-full mt-4 bg-indigo-600 text-white py-3 rounded-lg font-bold hover:bg-indigo-700">
-    ${state.stage==='conjugation'||!isCorrect?t.next:t.ok}</button>`:''}
-    </div></div>`;
-}
-
-function renderAbout() {
-    const t = TRANSLATIONS[state.lang].about;
-    return `
-    <div class="max-w-md mx-auto mt-10 px-4 font-sans">
-        <div class="bg-white rounded-2xl shadow-2xl p-8 border border-gray-100">
-            <h1 class="text-3xl font-black text-indigo-900 mb-2">${t.title}</h1>
-                <p class="text-xs text-gray-400 mb-2">
-                    Version ${APP_CONFIG.version} <br>
-                    Developed with ❤️ by ${APP_CONFIG.author}
-                </p>
-            
-            <div class="space-y-4 text-gray-600 mb-4 leading-relaxed">
-                <p>${t.desc}</p>
-                <p class="text-sm italic bg-gray-50 p-4 rounded-xl border-l-4 border-indigo-600">
-                    ${t.source}
-                </p>
-
-            </div>
-
-            <div class="grid grid-cols-3 gap-3 mb-2">
-                <div class="bg-indigo-600 p-4 rounded-2xl text-center shadow-lg shadow-indigo-100 transition-transform hover:scale-105">
-                    <span class="block text-2xl font-black text-white">${getStats().verbs}</span>
-                    <span class="text-[9px] uppercase font-bold text-indigo-200 tracking-tighter">${t.stat_verbs}</span>
-                </div>
-
-                <div class="bg-white border-2 border-indigo-600 p-4 rounded-2xl text-center transition-transform hover:scale-105">
-                    <span class="block text-2xl font-black text-indigo-900">${getStats().tenses}</span>
-                    <span class="text-[9px] uppercase font-bold text-indigo-400 tracking-tighter">${t.stat_tenses}</span>
-                </div>
-
-                <div class="bg-gray-50 border-2 border-dashed border-gray-200 p-4 rounded-2xl text-center opacity-60">
-                    <span class="block text-2xl font-black text-gray-400">${getStats().vocab}</span>
-                    <span class="text-[9px] uppercase font-bold text-gray-400 tracking-tighter">${t.stat_words}</span>
-                </div>
-            </div>
-
-            <button onclick="state.screen='menu';render()" 
-                class="mt-2 w-full bg-gray-100 text-gray-800 py-3 rounded-xl font-bold hover:bg-gray-200 transition-colors">
-                ${t.back}
-            </button>
-        </div>
-    </div>`;
-}
-
-
-function render(){
-    const screens={language:renderLang,menu:renderMenu,verbs:renderGame,stats:renderStats,about:renderAbout};
-    document.getElementById('app').innerHTML=screens[state.screen]();
 }
 
 render();
