@@ -257,39 +257,45 @@ function renderLang() {
     <div class="max-w-md mx-auto mt-10 px-4 font-sans">
         <div class="flex justify-between items-center mb-6 text-[10px] uppercase tracking-widest text-gray-400 font-semibold">
             <span>© App developed by ${APP_CONFIG.author}</span>
-            <span class="bg-gray-100 px-2 py-1 rounded">v${APP_CONFIG.version}</span>
+            <span class="bg-gray-100 px-2 py-1 rounded shadow-sm">v${APP_CONFIG.version}</span>
         </div>
 
-        <div class="bg-white rounded-2xl shadow-2xl p-8 text-center border border-gray-100">
-            <div class="mb-6">
-                <h1 class="text-5xl font-black text-indigo-900 tracking-tight mb-2">Català</h1>
-                <p class="text-[15px] font-bold uppercase tracking-tighter mb-2 mt-4 text-gray-800 italic">Benvinguts a l'aprenentatge del català</p>                
+        <div class="bg-white rounded-3xl shadow-2xl p-8 text-center border border-gray-100">
+            <div class="mb-8">
+                <h1 class="text-6xl font-black text-indigo-900 tracking-tighter mb-2">Català</h1>
+                <p class="text-[14px] font-bold uppercase tracking-widest text-grey-500 mb-4">
+                    Benvinguts a l'aprenentatge
+                </p>
                 
-                <p class="text-2xl font-black text-indigo-900 tracking-tight mb-2">Trieu l'idioma si us plau</p>
-                <div class="h-1 w-16 bg-indigo-600 mx-auto rounded-full mt-4"></div>
+                <div class="bg-indigo-50 py-3 px-4 rounded-2xl mb-2">
+                    <p class="text-xl font-extrabold text-indigo-900">Trieu l'idioma si us plau</p>
+                </div>
+                <div class="h-1 w-12 bg-indigo-600 mx-auto rounded-full"></div>
             </div>
 
-            <div class="grid grid-cols-2 gap-2 mb-10 text-[11px] font-bold uppercase tracking-tighter text-gray-400 italic">
-                <div>Choisissez votre langue</div>
+            <div class="grid grid-cols-2 gap-4 mb-6 text-[10px] font-black uppercase tracking-widest text-gray-400">
+                <div class="border-r border-gray-100">Choisissez votre langue</div>
                 <div>Elige tu idioma</div>
             </div>
 
             <div class="space-y-4">
                 <button onclick="selectLanguage('fr')" 
-                    class="group relative w-full flex items-center justify-center bg-indigo-600 border-2 border-indigo-600 text-white py-4 rounded-xl font-bold text-xl transition-all duration-200 hover:bg-indigo-600 hover:text-white">
-                    <span class="absolute left-6 group-hover:scale-125 transition-transform duration-200">🇫🇷</span>
-                    <span>Français</span>
+                    class="group relative w-full flex items-center justify-center bg-indigo-600 text-white py-5 rounded-2xl font-black text-xl transition-all duration-300 hover:bg-indigo-700 hover:-translate-y-1 shadow-lg hover:shadow-indigo-200">
+                    <img src="https://flagcdn.com/w40/fr.png" class="absolute left-6 w-7 rounded-sm group-hover:scale-110 transition-transform">
+                    <span class="tracking-tight">FRANÇAIS</span>
                 </button>
 
                 <button onclick="selectLanguage('es')" 
-                    class="group relative w-full flex items-center justify-center bg-red-600 border-2 border-red-600 text-white py-4 rounded-xl font-bold text-xl transition-all duration-200 hover:bg-red-600 hover:text-white">
-                    <span class="absolute left-6 group-hover:scale-125 transition-transform duration-200">🇪🇸</span>
-                    <span>Español</span>
+                    class="group relative w-full flex items-center justify-center bg-red-600 text-white py-5 rounded-2xl font-black text-xl transition-all duration-300 hover:bg-red-700 hover:-translate-y-1 shadow-lg hover:shadow-red-200">
+                    <img src="https://flagcdn.com/w40/es.png" class="absolute left-6 w-7 rounded-sm group-hover:scale-110 transition-transform">
+                    <span class="tracking-tight">ESPAÑOL</span>
                 </button>
             </div>
 
-            <div class="mt-4 font-bold uppercase text-gray-300 text-xs italic">
-                Aprendre una llengua és tenir una finestra més per mirar el món
+            <div class="mt-2 pt-8 border-t border-gray-50">
+                <p class="font-medium text-gray-400 text-[11px] leading-relaxed italic">
+                    "Aprendre una llengua és tenir una finestra més per mirar el món"
+                </p>
             </div>
         </div>
     </div>`;
