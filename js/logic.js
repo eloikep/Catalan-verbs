@@ -1,4 +1,10 @@
 // ==================== ÉTAT GLOBAL ====================
+const APP_CONFIG = {
+    version: "2.0.0",
+    author: "Eloïk Ep"
+};
+
+
 let state = {
     screen:'language',lang:null,stage:'translation',verb:null,pron:null,opts:[],sel:null,show:false,
     score:0,total:0,qCount:0,tenses:{present:true,subjunctive:false,future:false,imperfect:false,gerund:false,periphrastic:false},tense:null,verbStats:{},pool:null
