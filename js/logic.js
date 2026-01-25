@@ -4,9 +4,8 @@ const APP_CONFIG = {
     author: "Eloïk Ep"
 };
 
-
 let state = {
-    screen:'language',lang:null,stage:'translation',verb:null,pron:null,opts:[],sel:null,show:false,
+    screen:'about',lang:'fr',stage:'translation',verb:null,pron:null,opts:[],sel:null,show:false,
     score:0,total:0,qCount:0,tenses:{present:true,subjunctive:false,future:false,imperfect:false,gerund:false,periphrastic:false},tense:null,verbStats:{},pool:null
 };
 
@@ -240,18 +239,27 @@ function continueStats() {
 }
 
 
+function getStats() {
+    const verbCount = VERBS_DB.length;
+    
+    // On compte les temps dans le premier verbe pour savoir combien on en traite
+    // On exclut les clés qui ne sont pas des listes de conjugaison (fr, es, ca, gerund)
+    const tensesKeys = ['present', 'subjunctive', 'future', 'imperfect', 'periphrastic'];
+    const tenseCount = tensesKeys.length;
+
+    // Nombre total de formes traitées (Verbes * Temps * 6 personnes + Gérondif)
+    const totalForms = verbCount * (tenseCount * 6 + 1);
+
+    return {
+        verbs: verbCount,
+        tenses: tenseCount,
+        forms: totalForms,
+        vocab: 0 // À remplir quand tu créeras ta BDD vocabulaire
+    };
+}
 
 
-// ==================== 
-// ==================== 
-// ==================== 
 // ==================== RENDU ====================
-// ==================== 
-// ==================== 
-// ==================== 
-
-
-
 function renderLang() {
     return `
     <div class="max-w-md mx-auto mt-10 px-4 font-sans">
@@ -293,7 +301,7 @@ function renderLang() {
             </div>
 
             <div class="mt-2 pt-8 border-t border-gray-50">
-                <p class="font-medium text-gray-400 text-[11px] leading-relaxed italic">
+                <p class="font-medium text-gray-400 text-[16px] leading-relaxed italic">
                     "Aprendre una llengua és tenir una finestra més per mirar el món"
                 </p>
             </div>
@@ -304,19 +312,26 @@ function renderLang() {
 function renderMenu(){
     const t=TRANSLATIONS[state.lang].menu;
     const tn=TRANSLATIONS[state.lang].tenses;
-    return`<div class="max-w-md mx-auto mt-10"><div class="bg-white rounded-lg shadow-xl p-8">
-    <h1 class="text-3xl font-bold text-indigo-900 mb-6 text-center">${t.title}</h1>
-    <div class="bg-blue-50 p-4 rounded-lg mb-6">
-    <h2 class="font-bold text-blue-900 mb-3">${t.selectTenses}</h2>
-    <div class="space-y-2">
-    ${Object.keys(state.tenses).map(k=>`<label class="flex items-center gap-2 cursor-pointer">
-    <input type="checkbox" ${state.tenses[k]?'checked':''} onchange="toggleTense('${k}')" class="w-4 h-4">
-    <span>${tn[k]}</span></label>`).join('')}
-    </div></div>
-    <button onclick="startVerbs()" class="w-full bg-indigo-600 text-white py-4 rounded-lg font-bold text-xl hover:bg-indigo-700 mb-4">${t.start}</button>
-    <button disabled class="w-full bg-gray-300 text-gray-500 py-4 rounded-lg font-bold mb-4 cursor-not-allowed">${t.vocab} ${t.soon}</button>
-    <button onclick="goToLanguage()" class="w-full bg-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-300">🌐 ${t.changeLang}</button>
-    </div></div>`;
+    return`
+    <div class="max-w-md mx-auto mt-10"><div class="bg-white rounded-lg shadow-xl p-8">
+        <h1 class="text-3xl font-bold text-indigo-900 mb-6 text-center">${t.title}</h1>
+            <div class="bg-blue-50 p-4 rounded-lg mb-6">
+            <h2 class="font-bold text-blue-900 mb-3">${t.selectTenses}</h2>
+            <div class="space-y-2">
+            ${Object.keys(state.tenses).map(k=>`<label class="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" ${state.tenses[k]?'checked':''} onchange="toggleTense('${k}')" class="w-4 h-4">
+            <span>${tn[k]}</span></label>`).join('')}
+            </div></div>
+            
+            <button onclick="startVerbs()" class="w-full bg-indigo-600 text-white py-4 rounded-lg font-bold text-xl hover:bg-indigo-700 mb-4">${t.start}</button>
+            <button disabled class="w-full bg-gray-300 text-gray-500 py-4 rounded-lg font-bold mb-4 cursor-not-allowed">${t.vocab} ${t.soon}</button>
+            <button onclick="goToLanguage()" class="w-full bg-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-300">🌐 ${t.changeLang}</button>  
+            <button onclick="state.screen='about';render()" 
+                class="w-full bg-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-300 text-sm">
+                    ℹ️ À propos
+            </button>
+        </div>
+    </div>`;
 }
 
 function renderStats() {
@@ -596,9 +611,53 @@ function renderGame(){
     </div></div>`;
 }
 
+function renderAbout() {
+    const t = TRANSLATIONS[state.lang].about;
+    return `
+    <div class="max-w-md mx-auto mt-10 px-4 font-sans">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 border border-gray-100">
+            <h1 class="text-3xl font-black text-indigo-900 mb-2">${t.title}</h1>
+                <p class="text-xs text-gray-400 mb-2">
+                    Version ${APP_CONFIG.version} <br>
+                    Developed with ❤️ by ${APP_CONFIG.author}
+                </p>
+            
+            <div class="space-y-4 text-gray-600 mb-4 leading-relaxed">
+                <p>${t.desc}</p>
+                <p class="text-sm italic bg-gray-50 p-4 rounded-xl border-l-4 border-indigo-600">
+                    ${t.source}
+                </p>
+
+            </div>
+
+            <div class="grid grid-cols-3 gap-3 mb-2">
+                <div class="bg-indigo-600 p-4 rounded-2xl text-center shadow-lg shadow-indigo-100 transition-transform hover:scale-105">
+                    <span class="block text-2xl font-black text-white">${getStats().verbs}</span>
+                    <span class="text-[9px] uppercase font-bold text-indigo-200 tracking-tighter">${t.stat_verbs}</span>
+                </div>
+
+                <div class="bg-white border-2 border-indigo-600 p-4 rounded-2xl text-center transition-transform hover:scale-105">
+                    <span class="block text-2xl font-black text-indigo-900">${getStats().tenses}</span>
+                    <span class="text-[9px] uppercase font-bold text-indigo-400 tracking-tighter">${t.stat_tenses}</span>
+                </div>
+
+                <div class="bg-gray-50 border-2 border-dashed border-gray-200 p-4 rounded-2xl text-center opacity-60">
+                    <span class="block text-2xl font-black text-gray-400">${getStats().vocab}</span>
+                    <span class="text-[9px] uppercase font-bold text-gray-400 tracking-tighter">${t.stat_words}</span>
+                </div>
+            </div>
+
+            <button onclick="state.screen='menu';render()" 
+                class="mt-2 w-full bg-gray-100 text-gray-800 py-3 rounded-xl font-bold hover:bg-gray-200 transition-colors">
+                ${t.back}
+            </button>
+        </div>
+    </div>`;
+}
+
 
 function render(){
-    const screens={language:renderLang,menu:renderMenu,verbs:renderGame,stats:renderStats};
+    const screens={language:renderLang,menu:renderMenu,verbs:renderGame,stats:renderStats,about:renderAbout};
     document.getElementById('app').innerHTML=screens[state.screen]();
 }
 
