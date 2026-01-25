@@ -1,0 +1,147 @@
+// ==================== BASE DE DONNÉES VERBES CATALAN ====================
+const VERBS_DB = [
+    {fr:'être',es:'ser',ca:'ser',present:['soc','ets','és','som','sou','són'],subjunctive:['sigui','siguis','sigui','siguem','sigueu','siguin'],future:['seré','seràs','serà','serem','sereu','seran'],imperfect:['era','eres','era','érem','éreu','eren'],gerund:'essent',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'avoir',es:'tener',ca:'tenir',present:['tinc','tens','té','tenim','teniu','tenen'],subjunctive:['tingui','tinguis','tingui','tinguem','tingueu','tinguin'],future:['tindré','tindràs','tindrà','tindrem','tindreu','tindran'],imperfect:['tenia','tenies','tenia','teníem','teníeu','tenien'],gerund:'tenint',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'aller',es:'ir',ca:'anar',present:['vaig','vas','va','anem','aneu','van'],subjunctive:['vagi','vagis','vagi','anem','aneu','vagin'],future:['aniré','aniràs','anirà','anirem','anireu','aniran'],imperfect:['anava','anaves','anava','anàvem','anàveu','anaven'],gerund:'anant',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'faire',es:'hacer',ca:'fer',present:['faig','fas','fa','fem','feu','fan'],subjunctive:['faci','facis','faci','fem','feu','facin'],future:['faré','faràs','farà','farem','fareu','faran'],imperfect:['feia','feies','feia','fèiem','fèieu','feien'],gerund:'fent',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'pouvoir',es:'poder',ca:'poder',present:['puc','pots','pot','podem','podeu','poden'],subjunctive:['pugui','puguis','pugui','puguem','pugueu','puguin'],future:['podré','podràs','podrà','podrem','podreu','podran'],imperfect:['podia','podies','podia','podíem','podíeu','podien'],gerund:'podent',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'vouloir',es:'querer',ca:'voler',present:['vull','vols','vol','volem','voleu','volen'],subjunctive:['vulgui','vulguis','vulgui','vulguem','vulgueu','vulguin'],future:['voldré','voldràs','voldrà','voldrem','voldreu','voldran'],imperfect:['volia','volies','volia','volíem','volíeu','volien'],gerund:'volent',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'dire',es:'decir',ca:'dir',present:['dic','dius','diu','diem','dieu','diuen'],subjunctive:['digui','diguis','digui','diguem','digueu','diguin'],future:['diré','diràs','dirà','direm','direu','diran'],imperfect:['deia','deies','deia','dèiem','dèieu','deien'],gerund:'dient',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'venir',es:'venir',ca:'venir',present:['vinc','vens','ve','venim','veniu','venen'],subjunctive:['vingui','vinguis','vingui','vinguem','vingueu','vinguin'],future:['vindré','vindràs','vindrà','vindrem','vindreu','vindran'],imperfect:['venia','venies','venia','veníem','veníeu','venien'],gerund:'venint',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'savoir',es:'saber',ca:'saber',present:['sé','saps','sap','sabem','sabeu','saben'],subjunctive:['sàpiga','sàpigues','sàpiga','sapiguem','sapigueu','sàpiguen'],future:['sabré','sabràs','sabrà','sabrem','sabreu','sabran'],imperfect:['sabia','sabies','sabia','sabíem','sabíeu','sabien'],gerund:'sabent',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'voir',es:'ver',ca:'veure',present:['veig','veus','veu','veiem','veieu','veuen'],subjunctive:['vegi','vegis','vegi','vegem','vegeu','vegin'],future:['veuré','veuràs','veurà','veurem','veureu','veuran'],imperfect:['veia','veies','veia','vèiem','vèieu','veien'],gerund:'veient',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'parler',es:'hablar',ca:'parlar',present:['parlo','parles','parla','parlem','parleu','parlen'],subjunctive:['parli','parlis','parli','parlem','parleu','parlin'],future:['parlaré','parlaràs','parlarà','parlarem','parlareu','parlaran'],imperfect:['parlava','parlaves','parlava','parlàvem','parlàveu','parlaven'],gerund:'parlant',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'vivre',es:'vivir',ca:'viure',present:['visc','vius','viu','vivim','viviu','viuen'],subjunctive:['visqui','visquis','visqui','visquem','visqueu','visquin'],future:['viuré','viuràs','viurà','viurem','viureu','viuran'],imperfect:['vivia','vivies','vivia','vivíem','vivíeu','vivien'],gerund:'vivint',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'écrire',es:'escribir',ca:'escriure',present:['escric','escrius','escriu','escrivim','escriviu','escriuen'],subjunctive:['escrigui','escriguis','escrigui','escriguem','escrigueu','escriguin'],future:['escriuré','escriuràs','escriurà','escriurem','escriureu','escriuran'],imperfect:['escrivia','escrivies','escrivia','escrivíem','escrivíeu','escrivien'],gerund:'escrivint',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'servir',es:'servir',ca:'servir',present:['serveixo','serveixes','serveix','servim','serviu','serveixen'],subjunctive:['serveixi','serveixis','serveixi','servim','serviu','serveixin'],future:['serviré','serviràs','servirà','servirem','servireu','serviran'],imperfect:['servia','servies','servia','servíem','servíeu','servien'],gerund:'servint',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'lire',es:'leer',ca:'llegir',present:['llegeixo','llegeixes','llegeix','llegim','llegiu','llegeixen'],subjunctive:['llegeixi','llegeixis','llegeixi','llegim','llegiu','llegeixin'],future:['llegiré','llegiràs','llegirà','llegirem','llegireu','llegiran'],imperfect:['llegia','llegies','llegia','llegíem','llegíeu','llegien'],gerund:'llegint',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'manger',es:'comer',ca:'menjar',present:['menjo','menges','menja','mengem','mengeu','mengen'],subjunctive:['mengi','mengis','mengi','mengem','mengeu','mengin'],future:['menjaré','menjaràs','menjarà','menjarem','menjareu','menjaran'],imperfect:['menjava','menjaves','menjava','menjàvem','menjàveu','menjaven'],gerund:'menjant',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'dormir',es:'dormir',ca:'dormir',present:['dormo','dorms','dorm','dormim','dormiu','dormen'],subjunctive:['dormi','dormis','dormi','dormim','dormiu','dormin'],future:['dormiré','dormiràs','dormirà','dormirem','dormireu','dormiran'],imperfect:['dormia','dormies','dormia','dormíem','dormíeu','dormien'],gerund:'dormint',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'conduire',es:'conducir',ca:'conduir',present:['condueixo','condueixes','condueix','conduïm','conduïu','condueixen'],subjunctive:['condueixi','condueixis','condueixi','conduïm','conduïu','condueixin'],future:['conduiré','conduiràs','conduirà','conduirem','conduireu','conduiran'],imperfect:['conduïa','conduïes','conduïa','conduïem','conduïeu','conduïen'],gerund:'conduint',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'travailler',es:'trabajar',ca:'treballar',present:['treballo','treballes','treballa','treballem','treballeu','treballen'],subjunctive:['treballi','treballis','treballi','treballem','treballeu','treballin'],future:['treballaré','treballaràs','treballarà','treballarem','treballareu','treballaran'],imperfect:['treballava','treballaves','treballava','treballàvem','treballàveu','treballaven'],gerund:'treballant',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'s\'appeler',es:'llamarse',ca:'dir-se',present:['em dic','et dius','es diu','ens diem','us dieu','es diuen'],subjunctive:['em digui','et diguis','es digui','ens diguem','us digueu','es diguin'],future:['em diré','et diràs','es dirà','ens direm','us direu','es diran'],imperfect:['em deia','et deies','es deia','ens dèiem','us dèieu','es deien'],gerund:'dient-se',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'s\'asseoir',es:'sentarse',ca:'seure',present:['sec','seus','seu','seiem','seieu','seuen'],subjunctive:['segui','seguis','segui','seguem','segueu','seguin'],future:['seuré','seuràs','seurà','seurem','seureu','seuran'],imperfect:['seia','seies','seia','sèiem','sèieu','seien'],gerund:'seient',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'boire',es:'beber',ca:'beure',present:['bec','beus','beu','bevem','beveu','beuen'],subjunctive:['begui','beguis','begui','beguem','begueu','beguin'],future:['beuré','beuràs','beurà','beurem','beureu','beuran'],imperfect:['bevia','bevies','bevia','bevíem','bevíeu','bevien'],gerund:'bevent',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'croire',es:'creer',ca:'creure',present:['crec','creus','creu','creiem','creieu','creuen'],subjunctive:['cregui','creguis','cregui','creguem','cregueu','creguin'],future:['creuré','creuràs','creurà','creurem','creureu','creuran'],imperfect:['creia','creies','creia','crèiem','crèieu','creien'],gerund:'creient',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'fuir',es:'huir',ca:'fugir',present:['fujo','fuges','fuig','fugim','fugiu','fugen'],subjunctive:['fugi','fugis','fugi','fugim','fugiu','fugin'],future:['fugiré','fugiràs','fugirà','fugirem','fugireu','fugiran'],imperfect:['fugia','fugies','fugia','fugíem','fugíeu','fugien'],gerund:'fugint',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'mourir',es:'morir',ca:'morir',present:['moro','mors','mor','morim','moriu','moren'],subjunctive:['mori','moris','mori','morim','moriu','morin'],future:['moriré','moriràs','morirà','morirem','morireu','moriran'],imperfect:['moria','mories','moria','moríem','moríeu','morien'],gerund:'morint',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'ouvrir',es:'abrir',ca:'obrir',present:['obro','obres','obre','obrim','obriu','obren'],subjunctive:['obri','obris','obri','obrim','obriu','obrin'],future:['obriré','obriràs','obrirà','obrirem','obrireu','obriran'],imperfect:['obria','obries','obria','obíem','obríeu','obrien'],gerund:'obrint',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'cueillir',es:'recoger',ca:'collir',present:['cullo','culls','cull','collim','colliu','cullen'],subjunctive:['culli','cullis','culli','collim','colliu','cullin'],future:['colliré','colliràs','collirà','collirem','collireu','colliran'],imperfect:['collia','collies','collia','collíem','collíeu','collien'],gerund:'collint',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'remplir',es:'llenar',ca:'omplir',present:['omplo','omples','omple','omplim','ompliu','omplen'],subjunctive:['ompli','omplis','ompli','omplim','ompliu','omplin'],future:['ompliré','ompliràs','omplirà','omplirem','omplireu','ompliran'],imperfect:['omplia','omplies','omplia','omplíem','omplíeu','omplien'],gerund:'omplint',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'sentir',es:'sentir',ca:'sentir',present:['sento','sents','sent','sentim','sentiu','senten'],subjunctive:['senti','sentis','senti','sentim','sentiu','sentin'],future:['sentiré','sentiràs','sentirà','sentirem','sentireu','sentiran'],imperfect:['sentia','senties','sentia','sentíem','sentíeu','sentien'],gerund:'sentint',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'acquiescer',es:'asentir',ca:'assentir',present:['assenteixo','assenteixes','assenteix','assentim','assentiu','assenteixen'],subjunctive:['assenteixi','assenteixis','assenteixi','assentim','assentiu','assenteixin'],future:['assentiré','assentiràs','assentirà','assentirem','assentireu','assentiran'],imperfect:['assentia','assenties','assentia','assentíem','assentíeu','assentien'],gerund:'assentint',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'être en désaccord',es:'disentir',ca:'dissentir',present:['dissenteixo','dissenteixes','dissenteix','dissentim','dissentiu','dissenteixen'],subjunctive:['dissenteixi','dissenteixis','dissenteixi','dissentim','dissentiu','dissenteixin'],future:['dissentiré','dissentiràs','dissentirà','dissentirem','dissentireu','dissentiran'],imperfect:['dissentia','dissenties','dissentia','dissentíem','dissentíeu','dissentien'],gerund:'dissentint',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'bouillir',es:'hervir',ca:'bullir',present:['bullo','bulls','bull','bullim','bulliu','bullen'],subjunctive:['bulli','bullis','bulli','bullim','bulliu','bullin'],future:['bulliré','bulliràs','bullirà','bullirem','bullireu','bulliran'],imperfect:['bullia','bullies','bullia','bullíem','bullíeu','bullien'],gerund:'bullint',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'craquer',es:'crujir',ca:'cruixir',present:['cruixo','cruixes','cruix','cruixim','cruixiu','cruixen'],subjunctive:['cruixi','cruixis','cruixi','cruixim','cruixiu','cruixin'],future:['cruixiré','cruixiràs','cruixirà','cruixirem','cruixireu','cruixiran'],imperfect:['cruixia','cruixies','cruixia','cruixíem','cruixíeu','cruixien'],gerund:'cruixint',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'grogner',es:'gruñir',ca:'grunyir',present:['grunyo','grunys','gruny','grunyim','grunyiu','grunyen'],subjunctive:['grunyi','grunyis','grunyi','grunyim','grunyiu','grunyin'],future:['grunyiré','grunyiràs','grunyirà','grunyirem','grunyireu','grunyiran'],imperfect:['grunyia','grunyies','grunyia','grunyíem','grunyíeu','grunyien'],gerund:'grunyint',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'apprendre',es:'aprender',ca:'aprendre',present:['aprenc','aprens','aprèn','aprenem','apreneu','aprenen'],subjunctive:['aprengui','aprenguis','aprengui','aprenguem','aprengueu','aprenguin'],future:['aprendré','aprendràs','aprendrà','aprendrem','aprendreu','aprendran'],imperfect:['aprenia','aprenies','aprenia','apreníem','apreníeu','aprenien'],gerund:'aprenent',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'revenir',es:'volver',ca:'tornar',present:['torno','tornes','torna','tornem','torneu','tornen'],subjunctive:['torni','tornis','torni','tornem','torneu','tornin'],future:['tornaré','tornaràs','tornarà','tornarem','tornareu','tornaran'],imperfect:['tornava','tornaves','tornava','tornàvem','tornàveu','tornaven'],gerund:'tornant',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'s\'habiller',es:'vestirse',ca:'vestir-se',present:['em vesteixo','et vesteixes','es vesteix','ens vestim','us vestiu','es vesteixen'],subjunctive:['em vesteixi','et vesteixis','es vesteixi','ens vestim','us vestiu','es vesteixin'],future:['em vestiré','et vestiràs','es vestirà','ens vestirem','us vestireu','es vestiran'],imperfect:['em vestia','et vesties','es vestia','ens vestíem','us vestíeu','es vestien'],gerund:'vestint-se',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'porter',es:'llevar',ca:'portar',present:['porto','portes','porta','portem','porteu','porten'],subjunctive:['porti','portis','porti','portem','porteu','portin'],future:['portaré','portaràs','portarà','portarem','portareu','portaran'],imperfect:['portava','portaves','portava','portàvem','portàveu','portaven'],gerund:'portant',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'se doucher',es:'ducharse',ca:'dutxar-se',present:['em dutxo','et dutxes','es dutxa','ens dutxem','us dutxeu','es dutxen'],subjunctive:['em dutxi','et dutxis','es dutxi','ens dutxem','us dutxeu','es dutxin'],future:['em dutxaré','et dutxaràs','es dutxarà','ens dutxarem','us dutxareu','es dutxaran'],imperfect:['em dutxava','et dutxaves','es dutxava','ens dutxàvem','us dutxàveu','es dutxaven'],gerund:'dutxant-se',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'perdre',es:'perder',ca:'perdre',present:['perdo','perds','perd','perdem','perdeu','perden'],subjunctive:['perdi','perdis','perdi','perdem','perdeu','perdin'],future:['perdré','perdràs','perdrà','perdrem','perdreu','perdran'],imperfect:['perdia','perdies','perdia','perdíem','perdíeu','perdien'],gerund:'perdent',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'courir',es:'correr',ca:'córrer',present:['corro','corres','corre','correm','correu','corren'],subjunctive:['corri','corris','corri','correm','correu','corrin'],future:['correré','correràs','correrà','correrem','correreu','correran'],imperfect:['corria','corries','corria','corríem','corríeu','corrien'],gerund:'corrent',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'être (état/lieu)',es:'estar',ca:'estar',present:['estic','estàs','està','estem','esteu','estan'],subjunctive:['estigui','estiguis','estigui','estiguem','estigueu','estiguin'],future:['estaré','estaràs','estarà','estarem','estareu','estaran'],imperfect:['estava','estaves','estava','estàvem','estàveu','estaven'],gerund:'estant',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'vendre',es:'vender',ca:'vendre',present:['venc','vends','ven','venem','veneu','venen'],subjunctive:['vengui','venguis','vengui','venguem','vengueu','venguin'],future:['vendré','vendràs','vendrà','vendrem','vendreu','vendran'],imperfect:['venia','venies','venia','veníem','veníeu','venien'],gerund:'venent',periphrastic:['vaig','vas','va','vam','vau','van']},
+    {fr:'prendre',es:'tomar/coger',ca:'prendre',present:['prenc','prens','pren','prenem','preneu','prenen'],subjunctive:['prengui','prenguis','prengui','prenguem','prengueu','prenguin'],future:['prendré','prendràs','prendrà','prendrem','prendreu','prendran'],imperfect:['prenia','prenies','prenia','preníem','preníeu','prenien'],gerund:'prenent',periphrastic:['vaig','vas','va','vam','vau','van']}
+];
+
+const PRONOUNS = [
+    {ca:'jo',fr:'je',es:'yo',i:0},
+    {ca:'tu',fr:'tu',es:'tú',i:1},
+    {ca:'ell/ella',fr:'il/elle',es:'él/ella',i:2},
+    {ca:'nosaltres',fr:'nous',es:'nosotros/as',i:3},
+    {ca:'vosaltres',fr:'vous',es:'vosotros/as',i:4},
+    {ca:'ells/elles',fr:'ils/elles',es:'ellos/ellas',i:5}
+];
+
+const TRANSLATIONS = {
+    fr: {
+        title: 'Révision Catalan',
+        menu: {
+            title: 'Menu Principal',
+            verbs: 'Verbes',
+            selectTenses: 'Sélectionner les temps',
+            start: 'Commencer',
+            vocab: 'Vocabulaire',
+            soon: '(Bientôt)',
+            changeLang: 'Changer de langue'
+        },
+        tenses: {
+            present: 'Présent',
+            subjunctive: 'Subjonctif',
+            future: 'Futur',
+            imperfect: 'Imparfait',
+            gerund: 'Gérondif',
+            periphrastic: 'Passé périphrastique'
+        },
+        game: {
+            back: '← Menu',
+            step1: 'Étape 1: Traduction',
+            step2: 'Étape 2: Conjugaison',
+            verb: 'Verbe',
+            q1: 'Quelle est la traduction en catalan ?',
+            q2: 'au',
+            full: 'Conjugaison complète de',
+            next: 'Question suivante',
+            ok: 'OK, continuer',
+	        reviewMode: "Mode Révision : Correction des erreurs"
+        },
+        stats: {
+            title: 'Récapitulatif',
+            questions: 'questions',
+            translation: 'Traduction',
+            continue: 'Continuer',
+            menu: 'Menu',
+            // Nouveaux champs pour renderStats
+            detailTitle: 'Détail par verbe',
+            congrats: 'Félicitations ! Tes 10 derniers verbes sont parfaits. ✨',
+            focus: "Points d'attention (2 pires verbes) :",
+	        retryButton: "Revoir les verbes problématiques"
+        }
+    },
+    es: {
+        title: 'Repaso Catalán',
+        menu: {
+            title: 'Menú Principal',
+            verbs: 'Verbos',
+            selectTenses: 'Seleccionar tiempos',
+            start: 'Comenzar',
+            vocab: 'Vocabulario',
+            soon: '(Próximamente)',
+            changeLang: 'Cambiar idioma'
+        },
+        tenses: {
+            present: 'Presente',
+            subjunctive: 'Subjuntivo',
+            future: 'Futuro',
+            imperfect: 'Imperfecto',
+            gerund: 'Gerundio',
+            periphrastic: 'Pasado perifrástico'
+        },
+        game: {
+            back: '← Menú',
+            step1: 'Paso 1: Traducción',
+            step2: 'Paso 2: Conjugación',
+            verb: 'Verbo',
+            q1: '¿Cuál es la traducción al catalán?',
+            q2: 'en',
+            full: 'Conjugación completa de',
+            next: 'Siguiente pregunta',
+            ok: 'OK, continuar',
+	        reviewMode: "Modo Revisión: Corrección de errores"
+        },
+        stats: {
+            title: 'Resumen',
+            questions: 'preguntas',
+            translation: 'Traducción',
+            continue: 'Continuar',
+            menu: 'Menú',
+            // Nouveaux champs pour renderStats
+            detailTitle: 'Detalle por verbo',
+            congrats: '¡Felicidades! Tus últimos 10 verbos son perfectos. ✨',
+            focus: 'Puntos de atención (2 peores verbos):',
+	        retryButton: "Repasar verbos con errores"
+        }
+    }
+};
