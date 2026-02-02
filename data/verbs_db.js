@@ -54,3 +54,4 @@ const PRONOUNS = [
     {ca:'vosaltres',fr:'vous',es:'vosotros/as',i:4},
     {ca:'ells/elles',fr:'ils/elles',es:'ellos/ellas',i:5}
 ];
+
