@@ -1,4 +1,4 @@
-const TRANSLATIONS = {
+const TRADS_DB = {
     fr: {
         title: 'Révision Catalan',
         menu: {
@@ -51,6 +51,29 @@ const TRANSLATIONS = {
             stat_tenses: "Temps verbaux",
             stat_words: "Mots de vocabulaire",
             back: "Retour"
+        },
+        vocab: {
+            title: 'Vocabulaire',
+            chooseCat: 'Choisissez une catégorie',
+            all: 'Toutes les catégories',
+            instruction: 'Com es diu en català ?',
+            pluralNote: '(pluriel)',
+            vocabErrors: "Mots à revoir :",
+            menu: 'Menu',
+            congratsVocab: "✨ Excellent ! Tu as maîtrisé les 10 derniers mots !",
+            retryVocab: "Réessayer les erreurs",
+            categories: {
+                fruits: 'Fruits & Légumes',
+                prepo: 'Prépositions',
+                city: 'Ville & Commerces',
+                body: 'Le Corps Humain',
+                house: 'La Maison',
+                animals: 'Les Animaux',
+                food: 'Nourriture',
+                family: 'La Famille',
+                jobs: 'Les Métiers',
+                transp: 'Transports'
+            }
         }
     },
     es: {
@@ -105,6 +128,28 @@ const TRANSLATIONS = {
             stat_tenses: "Temps verbals",
             stat_words: "Paraules de vocabulari",
             back: "Volver"
+        },
+        vocab: {
+            title: 'Vocabulario',
+            chooseCat: 'Elige una categoría',
+            all: 'Todas las categorías',
+            instruction: '¿Cómo se dice en catalán?',
+            pluralNote: '(plural)',
+            categories: {
+                fruits: 'Frutas y Verduras',
+                prepo: 'Preposiciones',
+                city: 'Ciudad y Tiendas',
+                body: 'El Cuerpo Humano',
+                house: 'La Casa',
+                animals: 'Los Animales',
+                food: 'Comida',
+                family: 'La Familia',
+                jobs: 'Profesiones',
+                transp: 'Transportes'
+            },
+            vocabErrors: "Palabras a revisar :",
+            congratsVocab: "✨ Excelente ! Las 10 últimas palabras eran perfectas !",
+            retryVocab: "Repasar los errores"
         }
     }
 };
