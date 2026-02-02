@@ -4,11 +4,37 @@ const APP_CONFIG = {
     author: "Eloïk Ep"
 };
 
-let state = {
-    screen:'language',lang:null,stage:'translation',verb:null,pron:null,opts:[],sel:null,show:false,
-    score:0,total:0,qCount:0,tenses:{present:true,subjunctive:false,future:false,imperfect:false,gerund:false,periphrastic:false},tense:null,verbStats:{},pool:null
-};
 
+let state = {
+    // --- Navigation ---
+    screen: 'language', 
+    lang: null, 
+    mode: 'verbs', // Nouvelle clé : 'verbs' ou 'vocab'
+    
+    // --- Logique Exercices (Verbes & Vocab) ---
+    stage: 'translation', 
+    verb: null, // Utilisé pour les verbes
+    vocabItem: null, // Nouveau : l'objet mot actuel de VOCAB_DB
+    vocabPool: null, // Nouveau : la liste des mots filtrés par catégorie
+    
+    // --- Données Question (Agnostique) ---
+    pron: null, 
+    tense: null,
+    opts: [], 
+    sel: null, 
+    show: false,
+    
+    // --- Scores & Stats ---
+    score: 0, 
+    total: 0, 
+    qCount: 0,
+    tenses: { present: true, subjunctive: false, future: false, imperfect: false, gerund: false, periphrastic: false },
+    verbStats: {},
+    vocabStats: {}, // Nouveau : pour stocker les erreurs par mot
+    sessionHistory: null,
+    // --- Pool de révision ---
+    pool: null 
+};
 
 // ==================== FONCTIONS PRINCIPALES ====================
 
@@ -310,8 +336,8 @@ function renderLang() {
 }
 
 function renderMenu(){
-    const t=TRANSLATIONS[state.lang].menu;
-    const tn=TRANSLATIONS[state.lang].tenses;
+    const t=TRADS_DB[state.lang].menu;
+    const tn=TRADS_DB[state.lang].tenses;
     return`
     <div class="max-w-md mx-auto mt-10"><div class="bg-white rounded-lg shadow-xl p-8">
         <h1 class="text-3xl font-bold text-indigo-900 mb-6 text-center">${t.title}</h1>
@@ -324,7 +350,7 @@ function renderMenu(){
             </div></div>
             
             <button onclick="startVerbs()" class="w-full bg-indigo-600 text-white py-4 rounded-lg font-bold text-xl hover:bg-indigo-700 mb-4">${t.start}</button>
-            <button disabled class="w-full bg-gray-300 text-gray-500 py-4 rounded-lg font-bold mb-4 cursor-not-allowed">${t.vocab} ${t.soon}</button>
+            <button onclick="state.screen='vocab_menu';render()" class="w-full bg-indigo-600 text-white py-4 rounded-lg font-bold text-xl hover:bg-indigo-700 mb-4">${t.vocab}</button>
             <button onclick="goToLanguage()" class="w-full bg-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-300">🌐 ${t.changeLang}</button>  
             <button onclick="state.screen='about';render()" 
                 class="w-full mt-4 bg-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-300 text-sm">
@@ -337,8 +363,8 @@ function renderMenu(){
 
 function renderGame(){
     if(!state.verb||!state.pron)return'';
-    const t=TRANSLATIONS[state.lang].game;
-    const tn=TRANSLATIONS[state.lang].tenses;
+    const t=TRADS_DB[state.lang].game;
+    const tn=TRADS_DB[state.lang].tenses;
     
     // GÉRONDIF EXCEPTION : On récupère la string directe au lieu de l'index
     const correctAns=state.stage==='translation'
@@ -393,7 +419,7 @@ function renderGame(){
 }
 
 function renderAbout() {
-    const t = TRANSLATIONS[state.lang].about;
+    const t = TRADS_DB[state.lang].about;
     return `
     <div class="max-w-md mx-auto mt-10 px-4 font-sans">
         <div class="bg-white rounded-2xl shadow-2xl p-8 border border-gray-100">
@@ -438,15 +464,24 @@ function renderAbout() {
 
 
 function render(){
-    const screens={language:renderLang,menu:renderMenu,verbs:renderGame,stats:renderStats,about:renderAbout};
+    const screens={
+        language:renderLang,
+        menu:renderMenu,
+        verbs:renderGame,
+        stats:renderStats,
+        about:renderAbout,
+        vocab_menu: renderVocabMenu,
+        vocab_game: renderVocabGame,
+        vocab_stats: renderVocabStats
+    };
     document.getElementById('app').innerHTML=screens[state.screen]();
 }
 
 
 function renderStats() {
     const lang = state.lang;
-    const t = TRANSLATIONS[lang].stats;
-    const tn = TRANSLATIONS[lang].tenses;
+    const t = TRADS_DB[lang].stats;
+    const tn = TRADS_DB[lang].tenses;
     const list = Object.keys(state.verbStats);
 
     // --- 1. CALCULS DES SCORES & RANKINGS ---
