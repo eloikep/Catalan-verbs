@@ -31,7 +31,7 @@ let state = {
     tenses: { present: true, subjunctive: false, future: false, imperfect: false, gerund: false, periphrastic: false },
     verbStats: {},
     vocabStats: {}, // Nouveau : pour stocker les erreurs par mot
-    sessionHistory: null,
+    sessionHistory: [],
     // --- Pool de révision ---
     pool: null 
 };
@@ -45,7 +45,18 @@ function goToMenu() {
     state.screen = 'menu';
     render();
 }
-function goToLanguage(){state={screen:'language',lang:null,stage:'translation',verb:null,pron:null,opts:[],sel:null,show:false,score:0,total:0,qCount:0,tenses:{present:true,subjunctive:false,future:false,imperfect:false,periphrastic:false},tense:null,verbStats:{}};render();}
+function goToLanguage() {
+    // On ne réinitialise que ce qui concerne l'affichage actuel
+    state.screen = 'language';
+    state.lang = null;
+    state.show = false;
+    state.sel = null;
+    state.stage = 'translation';
+    
+    // On NE touche PAS à : state.score, state.total, state.verbStats, state.sessionHistory
+    render();
+}
+
 function toggleTense(t){state.tenses[t]=!state.tenses[t];render();}
 
 function startVerbs(){
@@ -61,8 +72,12 @@ function initStats(ca) {
             translation: { ok: 0, total: 0 } 
         };
         Object.keys(state.tenses).forEach(t => {
-            // On crée un tableau de 6 objets (un par personne)
-            state.verbStats[ca][t] = Array.from({ length: 6 }, () => ({ ok: 0, total: 0 }));
+            if (t === 'gerund') {
+                // Pour le gérondif : un seul objet, pas un tableau
+                state.verbStats[ca][t] = { ok: 0, total: 0 };
+            } else {
+                state.verbStats[ca][t] = Array.from({ length: 6 }, () => ({ ok: 0, total: 0 }));
+            }
         });
     }
 }
@@ -176,45 +191,48 @@ function startQ() {
 function handleAns(ans) {
     state.sel = ans;
     state.show = true;
+    const lang = state.lang;
+    const isTr = state.stage === 'translation';
+    const isGerund = state.tense === 'gerund';
+    
+    let correct, label;
 
-    if (state.stage === 'translation') {
-        const isCorrect = ans === state.verb.ca;
-        
-        // Mise à jour du compteur de traduction
-        state.verbStats[state.verb.ca].translation.total++;
-        if (isCorrect) {
-            state.verbStats[state.verb.ca].translation.ok++;
-            state.score += 0.5;
-        }
-        
-        state.total++;
-        if (isCorrect) {
-            state.stage = 'conjugation';
-            state.opts = genConjOpts(state.verb, state.pron.i, state.tense);
-            state.sel = null;
-            state.show = false;
-        }
-        render();
+    if (isTr) {
+        correct = state.verb.ca;
+        label = TRADS_DB[lang].stats.translation;
     } else {
-// --- GESTION DE L'EXCEPTION DU GÉRONDIF ---
-        const isGerund = state.tense === 'gerund';
-        
-        // Si gérondif, la réponse correcte est la string directe, sinon c'est l'index du tableau
-        const correct = isGerund ? state.verb.gerund : state.verb[state.tense][state.pron.i];
-        const isCorrect = ans === correct;
-
-        // Pour les stats, si c'est le gérondif, on stocke tout à l'index [0] pour ne pas casser ta structure
-        const idx = isGerund ? 0 : state.pron.i;
-        const stat = state.verbStats[state.verb.ca][state.tense][idx];
-        stat.total++;
-        if (isCorrect) {
-            stat.ok++;
-            state.score += 0.5;
-        }
-
-        state.qCount++;
-        render();
+        correct = isGerund ? state.verb.gerund : state.verb[state.tense][state.pron.i];
+        label = isGerund ? TRADS_DB[lang].tenses.gerund : PRONOUNS[state.pron.i][lang];
     }
+
+    const isCorrect = ans === correct;
+
+    // --- MISE À JOUR DES COMPTEURS (Ton ancienne logique) ---
+    if (isTr) {
+        state.verbStats[state.verb.ca].translation.total++;
+        if (isCorrect) state.verbStats[state.verb.ca].translation.ok++;
+    } else {
+        const stat = isGerund ? state.verbStats[state.verb.ca][state.tense] : state.verbStats[state.verb.ca][state.tense][state.pron.i];
+        stat.total++;
+        if (isCorrect) stat.ok++;
+    }
+
+    // --- ENREGISTREMENT HISTORIQUE (Pour le nouveau renderStats) ---
+    state.sessionHistory.push({
+        verbId: state.verb.ca,
+        verbCa: state.verb.ca,
+        tense: state.tense,
+        personName: label,
+        userAns: ans,
+        correctAns: correct,
+        isCorrect: isCorrect
+    });
+
+    if (isCorrect) state.score += 0.5;
+    if (!isTr) state.qCount++; // On n'incrémente le compteur de 10 qu'après la conjugaison
+    
+    state.total += 0.5;
+    render();
 }
 
 function next(){
@@ -482,219 +500,64 @@ function renderStats() {
     const lang = state.lang;
     const t = TRADS_DB[lang].stats;
     const tn = TRADS_DB[lang].tenses;
-    const list = Object.keys(state.verbStats);
-
-    // --- 1. CALCULS DES SCORES & RANKINGS ---
-    let totalCorrect = 0;
-    let totalPossible = 0;
-    const scoresByTense = { translation: { ok: 0, total: 0 } };
-    const verbRankings = [];
-
-    list.forEach(ca => {
-        const s = state.verbStats[ca];
-        const v = VERBS_DB.find(x => x.ca === ca);
-        let verbCorrect = 0;
-        let verbTotal = 0;
-
-        // Traduction
-        if (s.translation.total > 0) {
-            scoresByTense.translation.ok += s.translation.ok;
-            scoresByTense.translation.total += s.translation.total;
-            verbCorrect += s.translation.ok;
-            verbTotal += s.translation.total;
-        }
-
-        // Conjugaisons
-        Object.keys(state.tenses).forEach(tense => {
-            if (state.tenses[tense] && s[tense]) {
-                if (!scoresByTense[tense]) scoresByTense[tense] = { ok: 0, total: 0 };
-                
-                // On vérifie si c'est un tableau (plusieurs personnes) ou un objet unique
-                const statsToProcess = Array.isArray(s[tense]) ? s[tense] : [s[tense]];
-
-                statsToProcess.forEach(stat => {
-                    if (stat && stat.total > 0) {
-                        scoresByTense[tense].ok += stat.ok;
-                        scoresByTense[tense].total += stat.total;
-                        verbCorrect += stat.ok;
-                        verbTotal += stat.total;
-                    }
-                });
-            }
-        });
-
-        totalCorrect += verbCorrect/2;
-        totalPossible += verbTotal/2;
-        
-        if (verbTotal > 0) {
-            verbRankings.push({ 
-                ca: ca, 
-                display: v.ca.toUpperCase(),
-                ratio: verbCorrect / verbTotal
-            });
-        }
-    });
-
-    // --- LOGIQUE DES 10 DERNIERS & PIRES VERBES ---
-    // Les 10 derniers verbes testés
-    const last10Entries = verbRankings.slice(-10);
-    const perfectLast10 = last10Entries.length > 0 && last10Entries.every(v => v.ratio === 1);
     
-    // Les 2 pires sur toute la session (uniquement ceux qui ont des erreurs)
-    const worstVerbs = [...verbRankings]
-        .filter(v => v.ratio < 1)
-        .sort((a, b) => a.ratio - b.ratio)
-        .slice(0, 2);
-   
-    // On ajoute les boutons d'erreurs	
-    const hasGlobalErrors = list.some(ca => {
-        const s = state.verbStats[ca];
-        const trErr = s.translation.ok < s.translation.total;
-        
-        const conjErr = Object.keys(state.tenses).some(t => {
-            if (!state.tenses[t] || !s[t]) return false;
-            
-            // Logique unifiée : on traite tout comme un tableau pour simplifier
-            const stats = Array.isArray(s[t]) ? s[t] : [s[t]];
-            return stats.some(st => st.total > 0 && st.ok < st.total);
-        });
-        
-        return trErr || conjErr;
+    const allErrors = state.sessionHistory.filter(h => !h.isCorrect);
+    const latestErrors = allErrors.slice(-10);
+
+    // Calcul du Top 3 à réviser
+    const errorCounts = {};
+    allErrors.forEach(err => {
+        errorCounts[err.verbCa] = (errorCounts[err.verbCa] || 0) + 1;
     });
+    const top3Worst = Object.entries(errorCounts)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 3)
+        .map(([ca]) => ca.toUpperCase());
 
+    // Liste satisfaction (tous les verbes vus)
+    const verbsSeen = [...new Set(state.sessionHistory.map(h => h.verbCa))];
 
-    // --- 2. RENDU HTML ---
-return `
-<div class="max-w-4xl mx-auto relative">
-    <div class="absolute -top-2 right-4 bg-indigo-600 text-white px-6 py-3 rounded-2xl shadow-lg z-10 font-black text-xl">
-        ${totalCorrect} / ${totalPossible}
-    </div>
-
-    <div class="bg-white rounded-lg shadow-xl p-8 pt-12">
-        <h1 class="text-3xl font-bold text-indigo-900 mb-6 text-center">${t.title}</h1>
-        
-        <div class="flex flex-wrap gap-4 mb-8">
-            <button onclick="goToMenu()" class="flex-1 min-w-[120px] bg-gray-100 text-gray-700 py-3 rounded-lg font-bold hover:bg-gray-200 transition">
-                ${t.menu}
-            </button>
-            ${hasGlobalErrors ? `
-                <button onclick="retryErrors()" class="flex-1 min-w-[120px] bg-orange-500 text-white py-3 rounded-lg font-bold hover:bg-orange-600 transition shadow-md">
-                    ${t.retryButton}
-                </button>
-            ` : ''}
-            <button onclick="continueStats()" class="flex-1 min-w-[120px] bg-indigo-600 text-white py-3 rounded-lg font-bold hover:bg-indigo-700 transition shadow-md">
-                ${t.continue}
-            </button>
+    return `
+    <div class="max-w-md mx-auto mt-6 px-2 space-y-6 mb-20">
+        <div class="bg-white rounded-3xl shadow-xl p-8 text-center">
+            <h1 class="text-2xl font-black text-indigo-900 mb-2">${t.title}</h1>
+            <div class="text-4xl font-black text-indigo-600">${Math.floor(state.score)} / ${Math.floor(state.total)}</div>
         </div>
 
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
-            <div class="bg-amber-50 p-3 rounded-xl border border-amber-100 text-center">
-                <div class="text-[10px] font-black text-amber-400 uppercase tracking-widest">${t.translation}</div>
-                <div class="text-lg font-bold text-amber-900">${scoresByTense.translation.ok}/${scoresByTense.translation.total}</div>
+        ${top3Worst.length > 0 ? `
+            <div class="bg-orange-50 rounded-2xl p-4 border border-orange-100">
+                <p class="text-[10px] font-black text-orange-400 uppercase mb-2">${t.focus}</p>
+                <div class="flex gap-2">${top3Worst.map(v => `<span class="bg-white px-2 py-1 rounded-lg shadow-sm font-bold text-orange-600 text-xs">${v}</span>`).join('')}</div>
             </div>
-            ${Object.keys(scoresByTense).filter(k => k !== 'translation').map(tense => `
-                <div class="bg-indigo-50 p-3 rounded-xl border border-indigo-100 text-center">
-                    <div class="text-[10px] font-black text-indigo-400 uppercase tracking-widest">${tn[tense]}</div>
-                    <div class="text-lg font-bold text-indigo-900">${scoresByTense[tense].ok}/${scoresByTense[tense].total}</div>
+        ` : `<div class="bg-green-50 p-4 rounded-2xl text-center font-bold text-green-700">🌟 ${t.congrats}</div>`}
+
+        <div class="space-y-2">
+            ${latestErrors.map(err => `
+                <div class="bg-white p-3 rounded-xl border border-red-50 text-xs shadow-sm">
+                    <div class="text-[9px] font-black text-gray-400 uppercase">${err.verbCa} - ${err.personName}</div>
+                    <div class="flex gap-2 items-center mt-1">
+                        <span class="text-red-500 line-through">${err.userAns}</span>
+                        <span>➔</span>
+                        <span class="text-green-600 font-bold">${err.correctAns}</span>
+                    </div>
                 </div>
             `).join('')}
         </div>
 
-        <div class="mb-10 p-5 rounded-2xl border-2 ${perfectLast10 ? 'bg-green-50 border-green-200' : 'bg-orange-50 border-orange-200'}">
-            ${perfectLast10 
-                ? `<p class="text-green-800 font-bold text-center">🌟 ${t.congrats}</p>`
-                : `<div>
-                    <p class="text-orange-900 font-bold mb-2 uppercase text-xs tracking-wider">${t.focus}</p>
-                    <div class="flex gap-2">
-                        ${worstVerbs.length > 0 
-                            ? worstVerbs.map(v => `<span class="bg-orange-600 text-white px-3 py-1 rounded-lg font-black shadow-sm">${v.display}</span>`).join('')
-                            : `<span class="text-orange-800 italic text-sm">Pas assez de données.</span>`
-                        }
-                    </div>
-                   </div>`
-            }
+        <div class="bg-gray-100 rounded-2xl p-4">
+            <p class="text-[10px] font-black text-gray-400 uppercase mb-3 text-center italic">${t.verbs}</p>
+            <div class="flex flex-wrap justify-center gap-2">
+                ${verbsSeen.map(ca => {
+                    const hasErr = allErrors.some(e => e.verbCa === ca);
+                    const color = hasErr ? 'bg-red-100 text-red-700 border-red-200' : 'bg-green-100 text-green-700 border-green-200';
+                    return `<span class="px-2 py-1 rounded text-[10px] font-bold border ${color}">${ca.toUpperCase()}</span>`;
+                }).join('')}
+            </div>
         </div>
 
-        <h2 class="text-xl font-black text-gray-300 mb-6 flex items-center gap-4 uppercase">
-            <span class="flex-grow h-px bg-gray-100"></span> ${t.detailTitle} <span class="flex-grow h-px bg-gray-100"></span>
-        </h2>
-
-        <div class="space-y-6">
-            ${list.map(ca => {
-                const v = VERBS_DB.find(x => x.ca === ca);
-                const s = state.verbStats[ca];
-                if (!s || s.translation.total === 0) return '';
-
-                let cOk = 0, cTot = 0;
-                Object.keys(state.tenses).forEach(tense => {
-                    if (state.tenses[tense] && s[tense]) {
-                        s[tense].forEach(st => { cOk += st.ok; cTot += st.total; });
-                    }
-                });
-
-                const trRatio = s.translation.ok / s.translation.total;
-                const trColor = trRatio === 1 ? 'bg-green-500' : (trRatio === 0 ? 'bg-red-500' : 'bg-orange-500');
-
-                return `
-                <div class="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
-                    <div class="flex justify-between items-start mb-6">
-                        <div>
-                            <div class="flex items-center gap-3 mb-1">
-                                <h3 class="text-2xl font-black text-indigo-900 uppercase">${v.ca}</h3>
-                                ${cTot > 0 ? `<span class="bg-indigo-100 text-indigo-700 text-[10px] px-2 py-0.5 rounded-full font-bold">Conj: ${Math.round((cOk/cTot)*100)}%</span>` : ''}
-                            </div>
-                            <p class="text-gray-400 italic text-sm">${v[lang]}</p>
-                        </div>
-                        <div class="${trColor} text-white px-3 py-1 rounded-lg text-[10px] font-black shadow-sm uppercase">
-                            ${t.translation}: ${s.translation.ok}/${s.translation.total}
-                        </div>
-                    </div>
-
-                    ${Object.keys(state.tenses).filter(tense => state.tenses[tense] && s[tense]).map(tense => {
-                        // On ne rend le bloc que si des questions ont été posées pour ce temps
-                        const hasTenseData = s[tense].some(stat => stat.total > 0);
-                        if (!hasTenseData) return '';
-
-                        return `
-                        <div class="bg-gray-50 rounded-xl p-4 mb-4 last:mb-0">
-                            <h4 class="text-[10px] font-black text-gray-400 uppercase mb-3 tracking-widest text-center italic">${tn[tense]}</h4>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-                                ${PRONOUNS.map((p, i) => {
-                                    const stat = s[tense][i];
-                                    const hasData = stat.total > 0;
-                                    
-                                    let bgColor = 'bg-white border-white';
-                                    let textColor = 'text-indigo-900';
-                                    let dotColor = 'bg-gray-200';
-
-                                    if (hasData) {
-                                        const ratio = stat.ok / stat.total;
-                                        if (ratio === 1) { bgColor = 'bg-green-50 border-green-100'; textColor = 'text-green-900'; dotColor = 'bg-green-500'; }
-                                        else if (ratio === 0) { bgColor = 'bg-red-50 border-red-100'; textColor = 'text-red-900'; dotColor = 'bg-red-500'; }
-                                        else { bgColor = 'bg-orange-50 border-orange-100'; textColor = 'text-orange-900'; dotColor = 'bg-orange-500'; }
-                                    } else {
-                                        bgColor = 'bg-gray-100/50 border-dashed border-gray-200';
-                                        textColor = 'text-gray-300';
-                                    }
-                                    
-                                    return `
-                                        <div class="flex items-center justify-between px-3 py-2 rounded-lg border shadow-sm transition-all ${bgColor}">
-                                            <div class="flex items-center gap-2 overflow-hidden">
-                                                <div class="w-1.5 h-1.5 rounded-full shrink-0 ${dotColor}"></div>
-                                                <span class="text-sm font-bold truncate ${textColor}">${v[tense][i]}</span>
-                                            </div>
-                                            ${hasData ? `<span class="text-[9px] font-black opacity-40 ml-2 ${textColor}">${stat.ok}/${stat.total}</span>` : ''}
-                                        </div>
-                                    `;
-                                }).join('')}
-                            </div>
-                        </div>`;
-                    }).join('')}
-                </div>`;
-            }).join('')}
-        </div>
-    </div>
-</div>`;
+        <button onclick="continueStats()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-black shadow-lg">${t.continue}</button>
+        <button onclick="goToMenu()" class="w-full text-gray-400 font-bold text-xs uppercase text-center mt-2">${t.menu}</button>
+    </div>`;
 }
 
 render();
